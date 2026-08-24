@@ -1,7 +1,7 @@
 name: Build OCLP Release (unsigned)
 
 # Compila la línea TechPrototyper / 2.5.0 sin certificados Apple.
-# El workflow oficial de Dortania solo corre en github.repository_owner == dortania.
+# Requiere Python >= 3.11 (StrEnum).
 on:
   workflow_dispatch:
 
@@ -23,12 +23,13 @@ jobs:
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip wheel setuptools
-          python3 -m pip install -r requirements.txt
+          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install -r requirements.txt
+          python -c "import sys; assert sys.version_info >= (3, 11), sys.version"
 
       - name: Build info
         id: meta
@@ -36,23 +37,23 @@ jobs:
           BRANCH="${GITHUB_REF_NAME}"
           SHA="$(git rev-parse --short HEAD)"
           DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          VER="$(python3 -c "from opencore_legacy_patcher.constants import Constants; print(Constants().patcher_version)")"
+          VER="$(python -c "from opencore_legacy_patcher.constants import Constants; print(Constants().patcher_version)")"
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "date=$DATE" >> "$GITHUB_OUTPUT"
           echo "version=$VER" >> "$GITHUB_OUTPUT"
-          echo "Building OCLP $VER @ $SHA"
+          echo "Building OCLP $VER @ $SHA with $(python -V)"
 
       - name: Prepare assets
         run: |
-          python3 Build-Project.command \
+          python Build-Project.command \
             --run-as-individual-steps \
             --reset-dmg-cache \
             --prepare-assets
 
       - name: Prepare application (unsigned)
         run: |
-          python3 Build-Project.command \
+          python Build-Project.command \
             --run-as-individual-steps \
             --reset-pyinstaller-cache \
             --prepare-application \
@@ -62,7 +63,7 @@ jobs:
 
       - name: Prepare package (unsigned)
         run: |
-          python3 Build-Project.command \
+          python Build-Project.command \
             --run-as-individual-steps \
             --prepare-package
 
@@ -87,18 +88,18 @@ jobs:
           cat > ReleaseNotes.md << EOF
           ## OpenCore Legacy Patcher ${{ steps.meta.outputs.version }} (build propio)
 
-          - **Base:** [TechPrototyper/OpenCore-Legacy-Patcher](https://github.com/TechPrototyper/OpenCore-Legacy-Patcher) (línea de investigación hacia Dortania)
+          - **Base:** [TechPrototyper/OpenCore-Legacy-Patcher](https://github.com/TechPrototyper/OpenCore-Legacy-Patcher)
           - **Commit:** \`${{ steps.meta.outputs.sha }}\`
-          - **Firma / notarización:** **no** (build CI sin certificados Apple)
+          - **Firma / notarización:** **no**
 
           ### Assets
           | Archivo | Uso |
           |---------|-----|
-          | \`OpenCore-Patcher.pkg\` | Instalador recomendado |
+          | \`OpenCore-Patcher.pkg\` | Instalador |
           | \`OpenCore-Patcher-Uninstaller.pkg\` | Desinstalador |
-          | \`AutoPkg-Assets.pkg\` | Assets internos del patcher |
+          | \`AutoPkg-Assets.pkg\` | Assets internos |
 
-          > No es el release oficial de Dortania. Root patch modifica el sistema: úsalo bajo tu responsabilidad.
+          > No es el release oficial de Dortania.
 
           Créditos: Dortania · TechPrototyper · Acidanthera
           EOF

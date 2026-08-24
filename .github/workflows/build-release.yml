@@ -1,0 +1,118 @@
+name: Build OCLP Release (unsigned)
+
+# Compila la línea TechPrototyper / 2.5.0 sin certificados Apple.
+# El workflow oficial de Dortania solo corre en github.repository_owner == dortania.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build OpenCore-Patcher
+    runs-on: macos-13
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip wheel setuptools
+          python3 -m pip install -r requirements.txt
+
+      - name: Build info
+        id: meta
+        run: |
+          BRANCH="${GITHUB_REF_NAME}"
+          SHA="$(git rev-parse --short HEAD)"
+          DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          VER="$(python3 -c "from opencore_legacy_patcher.constants import Constants; print(Constants().patcher_version)")"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "Building OCLP $VER @ $SHA"
+
+      - name: Prepare assets
+        run: |
+          python3 Build-Project.command \
+            --run-as-individual-steps \
+            --reset-dmg-cache \
+            --prepare-assets
+
+      - name: Prepare application (unsigned)
+        run: |
+          python3 Build-Project.command \
+            --run-as-individual-steps \
+            --reset-pyinstaller-cache \
+            --prepare-application \
+            --git-branch "${{ steps.meta.outputs.branch }}" \
+            --git-commit-url "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}" \
+            --git-commit-date "${{ steps.meta.outputs.date }}"
+
+      - name: Prepare package (unsigned)
+        run: |
+          python3 Build-Project.command \
+            --run-as-individual-steps \
+            --prepare-package
+
+      - name: List dist
+        run: |
+          ls -lah dist/ || true
+          find dist -maxdepth 2 -type f 2>/dev/null | head -50
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: OCLP-${{ steps.meta.outputs.version }}-${{ steps.meta.outputs.sha }}
+          path: |
+            dist/OpenCore-Patcher.pkg
+            dist/OpenCore-Patcher-Uninstaller.pkg
+            dist/AutoPkg-Assets.pkg
+            dist/OpenCore-Patcher.app
+          if-no-files-found: warn
+
+      - name: Release notes
+        run: |
+          cat > ReleaseNotes.md << EOF
+          ## OpenCore Legacy Patcher ${{ steps.meta.outputs.version }} (build propio)
+
+          - **Base:** [TechPrototyper/OpenCore-Legacy-Patcher](https://github.com/TechPrototyper/OpenCore-Legacy-Patcher) (línea de investigación hacia Dortania)
+          - **Commit:** \`${{ steps.meta.outputs.sha }}\`
+          - **Firma / notarización:** **no** (build CI sin certificados Apple)
+
+          ### Assets
+          | Archivo | Uso |
+          |---------|-----|
+          | \`OpenCore-Patcher.pkg\` | Instalador recomendado |
+          | \`OpenCore-Patcher-Uninstaller.pkg\` | Desinstalador |
+          | \`AutoPkg-Assets.pkg\` | Assets internos del patcher |
+
+          > No es el release oficial de Dortania. Root patch modifica el sistema: úsalo bajo tu responsabilidad.
+
+          Créditos: Dortania · TechPrototyper · Acidanthera
+          EOF
+
+      - name: Publish GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "v${{ steps.meta.outputs.version }}-RT-${{ steps.meta.outputs.sha }}"
+          name: "OCLP ${{ steps.meta.outputs.version }} — ReinierTutoriales (${{ steps.meta.outputs.sha }})"
+          bodyFile: ReleaseNotes.md
+          artifacts: "dist/OpenCore-Patcher.pkg,dist/OpenCore-Patcher-Uninstaller.pkg,dist/AutoPkg-Assets.pkg"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+          makeLatest: true
+          allowUpdates: true
+          replacesArtifacts: true
+          artifactErrorsFailBuild: false

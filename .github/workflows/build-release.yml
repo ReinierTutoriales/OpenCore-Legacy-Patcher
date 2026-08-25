@@ -2,6 +2,7 @@ name: Build OCLP Release (unsigned)
 
 # Compila la línea TechPrototyper / 2.5.0 sin certificados Apple.
 # Requiere Python >= 3.11 (StrEnum).
+# Nota: macos-13 está retirado en GitHub Actions → usar macos-14+.
 on:
   workflow_dispatch:
 
@@ -11,7 +12,7 @@ permissions:
 jobs:
   build:
     name: Build OpenCore-Patcher
-    runs-on: macos-13
+    runs-on: macos-14
     timeout-minutes: 120
 
     steps:
@@ -42,7 +43,7 @@ jobs:
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "date=$DATE" >> "$GITHUB_OUTPUT"
           echo "version=$VER" >> "$GITHUB_OUTPUT"
-          echo "Building OCLP $VER @ $SHA with $(python -V)"
+          echo "Building OCLP $VER @ $SHA with $(python -V) on $(uname -m)"
 
       - name: Prepare assets
         run: |

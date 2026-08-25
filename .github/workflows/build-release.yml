@@ -1,8 +1,7 @@
 name: Build OCLP Release (unsigned)
 
-# Compila la línea TechPrototyper / 2.5.0 sin certificados Apple.
-# Requiere Python >= 3.11 (StrEnum).
-# Nota: macos-13 está retirado en GitHub Actions → usar macos-14+.
+# Build Intel (x86_64) — runners macos-14/15 por defecto son Apple Silicon.
+# Para Intel hay que usar el label macos-15-intel de GitHub.
 on:
   workflow_dispatch:
 
@@ -10,9 +9,9 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build OpenCore-Patcher
-    runs-on: macos-14
+  build-intel:
+    name: Build OpenCore-Patcher (Intel x86_64)
+    runs-on: macos-15-intel
     timeout-minutes: 120
 
     steps:
@@ -25,6 +24,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
+      - name: Verify Intel architecture
+        run: |
+          echo "uname -m: $(uname -m)"
+          python -c "import platform; print(platform.machine())"
+          test "$(uname -m)" = "x86_64"
 
       - name: Install dependencies
         run: |
@@ -52,7 +57,7 @@ jobs:
             --reset-dmg-cache \
             --prepare-assets
 
-      - name: Prepare application (unsigned)
+      - name: Prepare application (unsigned, x86_64)
         run: |
           python Build-Project.command \
             --run-as-individual-steps \
@@ -72,11 +77,12 @@ jobs:
         run: |
           ls -lah dist/ || true
           find dist -maxdepth 2 -type f 2>/dev/null | head -50
+          file dist/OpenCore-Patcher.app/Contents/MacOS/OpenCore-Patcher 2>/dev/null || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: OCLP-${{ steps.meta.outputs.version }}-${{ steps.meta.outputs.sha }}
+          name: OCLP-${{ steps.meta.outputs.version }}-intel-x86_64-${{ steps.meta.outputs.sha }}
           path: |
             dist/OpenCore-Patcher.pkg
             dist/OpenCore-Patcher-Uninstaller.pkg
@@ -87,20 +93,21 @@ jobs:
       - name: Release notes
         run: |
           cat > ReleaseNotes.md << EOF
-          ## OpenCore Legacy Patcher ${{ steps.meta.outputs.version }} (build propio)
+          ## OpenCore Legacy Patcher ${{ steps.meta.outputs.version }} — **Intel (x86_64)**
 
           - **Base:** [TechPrototyper/OpenCore-Legacy-Patcher](https://github.com/TechPrototyper/OpenCore-Legacy-Patcher)
           - **Commit:** \`${{ steps.meta.outputs.sha }}\`
+          - **Arquitectura:** **x86_64 (Intel)** — runner \`macos-15-intel\`
           - **Firma / notarización:** **no**
 
           ### Assets
           | Archivo | Uso |
           |---------|-----|
-          | \`OpenCore-Patcher.pkg\` | Instalador |
+          | \`OpenCore-Patcher.pkg\` | Instalador (Macs Intel / Hackintosh) |
           | \`OpenCore-Patcher-Uninstaller.pkg\` | Desinstalador |
           | \`AutoPkg-Assets.pkg\` | Assets internos |
 
-          > No es el release oficial de Dortania.
+          > No es el release oficial de Dortania. Build unsigned.
 
           Créditos: Dortania · TechPrototyper · Acidanthera
           EOF
@@ -108,8 +115,8 @@ jobs:
       - name: Publish GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          tag: "v${{ steps.meta.outputs.version }}-RT-${{ steps.meta.outputs.sha }}"
-          name: "OCLP ${{ steps.meta.outputs.version }} — ReinierTutoriales (${{ steps.meta.outputs.sha }})"
+          tag: "v${{ steps.meta.outputs.version }}-intel-${{ steps.meta.outputs.sha }}"
+          name: "OCLP ${{ steps.meta.outputs.version }} — Intel x86_64 (${{ steps.meta.outputs.sha }})"
           bodyFile: ReleaseNotes.md
           artifacts: "dist/OpenCore-Patcher.pkg,dist/OpenCore-Patcher-Uninstaller.pkg,dist/AutoPkg-Assets.pkg"
           token: ${{ secrets.GITHUB_TOKEN }}

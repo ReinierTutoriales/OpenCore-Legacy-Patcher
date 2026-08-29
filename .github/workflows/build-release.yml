@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: TechPrototyper/OpenCore-Legacy-Patcher
-          ref: tahoe-experiment
+          ref: main
           fetch-depth: 1
 
       - name: Setup Python 3.11
@@ -28,7 +28,6 @@ jobs:
       - name: Prepare spec
         run: |
           test "$(uname -m)" = "x86_64"
-          python -c "import sys; assert sys.version_info >= (3, 11), sys.version"
           sed -i '' 's/target_arch="universal2"/target_arch="x86_64"/' OpenCore-Patcher-GUI.spec
 
       - name: Install dependencies
@@ -36,47 +35,23 @@ jobs:
           python -m pip install --upgrade pip wheel setuptools
           python -m pip install -r requirements.txt
 
-      - name: Version
-        id: meta
-        run: |
-          VER="$(python -c "from opencore_legacy_patcher.constants import Constants; print(Constants().patcher_version)")"
-          echo "version=$VER" >> "$GITHUB_OUTPUT"
-
       - name: Prepare assets
         run: |
-          python Build-Project.command \
-            --run-as-individual-steps \
-            --reset-dmg-cache \
-            --prepare-assets
+          python Build-Project.command --run-as-individual-steps --reset-dmg-cache --prepare-assets
 
       - name: Prepare application
         run: |
-          python Build-Project.command \
-            --run-as-individual-steps \
-            --reset-pyinstaller-cache \
-            --prepare-application
+          python Build-Project.command --run-as-individual-steps --reset-pyinstaller-cache --prepare-application
 
       - name: Prepare package
         run: |
-          python Build-Project.command \
-            --run-as-individual-steps \
-            --prepare-package
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: OpenCore-Patcher
-          path: |
-            dist/OpenCore-Patcher.pkg
-            dist/OpenCore-Patcher-Uninstaller.pkg
-            dist/AutoPkg-Assets.pkg
-          if-no-files-found: error
+          python Build-Project.command --run-as-individual-steps --prepare-package
 
       - name: Release
         uses: ncipollo/release-action@v1
         with:
-          tag: "${{ steps.meta.outputs.version }}"
-          name: "${{ steps.meta.outputs.version }}"
+          tag: "2.5.0"
+          name: "2.5.0"
           artifacts: "dist/OpenCore-Patcher.pkg,dist/OpenCore-Patcher-Uninstaller.pkg,dist/AutoPkg-Assets.pkg"
           token: ${{ secrets.GITHUB_TOKEN }}
           makeLatest: true

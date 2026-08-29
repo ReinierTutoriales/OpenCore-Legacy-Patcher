@@ -46,16 +46,36 @@ jobs:
       - name: Prepare package
         run: |
           python Build-Project.command --run-as-individual-steps --prepare-package
+          ls -lh dist/*.pkg
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenCore-Patcher
+          path: |
+            dist/OpenCore-Patcher.pkg
+            dist/OpenCore-Patcher-Uninstaller.pkg
+            dist/AutoPkg-Assets.pkg
+          if-no-files-found: error
 
       - name: Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: "2.5.0"
-          name: "2.5.0"
-          artifacts: "dist/OpenCore-Patcher.pkg,dist/OpenCore-Patcher-Uninstaller.pkg,dist/AutoPkg-Assets.pkg"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: true
-          allowUpdates: true
-          replacesArtifacts: true
-          omitBody: true
-          artifactErrorsFailBuild: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          OWNER_REPO="${GITHUB_REPOSITORY}"
+          for i in 1 2 3 4 5; do
+            gh release delete 2.5.0 --repo "$OWNER_REPO" --yes --cleanup-tag 2>/dev/null || true
+            if gh release create 2.5.0 \
+              dist/OpenCore-Patcher.pkg \
+              dist/OpenCore-Patcher-Uninstaller.pkg \
+              dist/AutoPkg-Assets.pkg \
+              --repo "$OWNER_REPO" \
+              --title "2.5.0" \
+              --latest; then
+              exit 0
+            fi
+            echo "retry $i"
+            sleep 20
+          done
+          exit 1

@@ -178,7 +178,7 @@ class PatcherValidation:
         if mount_point.is_mount():
             output = detach_disk_image(mount_point)
 
-            if output.returncode != 0:
+            if output.returncode != 0 and mount_point.is_mount():
                 logging.info("Failed to unmount Universal-Binaries.dmg")
                 subprocess_wrapper.log(output)
 
@@ -225,19 +225,20 @@ class PatcherValidation:
 
         atexit.register(self._unmount_dmg)
 
-        for supported_os in [os_data.os_data.big_sur, os_data.os_data.monterey, os_data.os_data.ventura, os_data.os_data.sonoma, os_data.os_data.sequoia, os_data.os_data.tahoe]:
-            for i in range(0, 10):
-                self._validate_root_patch_files(supported_os, i)
+        try:
+            for supported_os in [os_data.os_data.big_sur, os_data.os_data.monterey, os_data.os_data.ventura, os_data.os_data.sonoma, os_data.os_data.sequoia, os_data.os_data.tahoe]:
+                for i in range(0, 10):
+                    self._validate_root_patch_files(supported_os, i)
 
-        logging.info("Validating SNB Board ID patcher")
-        self.constants.computer.reported_board_id = "Mac-7BA5B2DFE22DDD8C"
-        sys_patch_helpers.SysPatchHelpers(self.constants).snb_board_id_patch(self.constants.payload_local_binaries_root_path)
+            logging.info("Validating SNB Board ID patcher")
+            self.constants.computer.reported_board_id = "Mac-7BA5B2DFE22DDD8C"
+            sys_patch_helpers.SysPatchHelpers(self.constants).snb_board_id_patch(self.constants.payload_local_binaries_root_path)
 
-        if self.verify_unused_files is True:
-            self._find_unused_files()
-
-        # unmount the dmg
-        self._unmount_dmg()
+            if self.verify_unused_files is True:
+                self._find_unused_files()
+        finally:
+            self._unmount_dmg()
+            atexit.unregister(self._unmount_dmg)
 
 
     def _find_unused_files(self) -> None:

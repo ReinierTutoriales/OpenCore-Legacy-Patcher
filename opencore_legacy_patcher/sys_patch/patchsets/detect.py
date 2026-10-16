@@ -102,7 +102,7 @@ class HardwarePatchsetDetection:
         self._constants = constants
 
         self._xnu_major  = xnu_major  or self._constants.detected_os
-        self._xnu_minor  = xnu_minor  or self._constants.detected_os_minor
+        self._xnu_minor  = self._constants.detected_os_minor if xnu_minor is None else xnu_minor
         self._os_build   = os_build   or self._constants.detected_os_build
         self._os_version = os_version or self._constants.detected_os_version
         self._validation = validation

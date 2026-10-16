@@ -39,6 +39,8 @@ python OpenCore-Patcher-GUI.command --validate
 
 Después comprueba que la aplicación empaquetada puede abrir su CLI. Los artefactos incluyen los paquetes, sus SHA-256, las dependencias resueltas y la procedencia del build. No se publican automáticamente como versión estable.
 
+El validador conserva el proceso original de Dortania: genera configuraciones para los modelos compatibles y las capturas de hardware, las comprueba con `ocvalidate` y revisa los recursos de los parches. El ejecutable `ocvalidate` coincide con el de OpenCore 1.0.8. Las comprobaciones de recursos incluyen Tahoe y respetan las versiones Darwin terminadas en `.0`, sin sustituirlas por la versión del equipo anfitrión. La imagen de recursos se desmonta también cuando falla una comprobación; si el desmontaje devuelve un error, solo se acepta como completado tras comprobar que el volumen ya no está montado.
+
 ## Instalación y recuperación
 
 La instalación prepara los archivos en la partición EFI, verifica sus hashes y conserva los archivos anteriores en `.OCLP-Backups/<identificador>/`. Un bloqueo impide instalaciones simultáneas. Un error durante el reemplazo activa la restauración; si esta falla, se conservan el bloqueo y el registro de recuperación. No se modifica `EFI/Microsoft`.

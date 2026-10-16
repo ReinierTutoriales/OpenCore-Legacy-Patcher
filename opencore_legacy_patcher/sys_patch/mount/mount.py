@@ -37,9 +37,9 @@ class RootVolumeMount:
         disk = content["DeviceIdentifier"]
 
         if "APFSSnapshot" in content and content["APFSSnapshot"] is True:
-            # Remove snapshot suffix (last 2 characters)
+            # Remove the final snapshot component, including multi-digit suffixes
             # ex. disk1s1s1 -> disk1s1
-            disk = disk[:-2]
+            disk = disk.rsplit("s", 1)[0]
 
         return disk
 

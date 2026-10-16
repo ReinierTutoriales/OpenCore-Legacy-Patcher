@@ -64,6 +64,14 @@ class UpdateTests(unittest.TestCase):
         self.response.json.return_value = [self.release("3.0.0-rc.3", True), self.release("2.5.1")]
         self.assertIsNone(self.checker.check_binary_updates())
 
+    def test_network_wrapper_failure_is_handled_without_type_error(self):
+        from test_network_handler import load_network
+        network = load_network()
+        with patch.object(network.SESSION, "get", side_effect=requests.ConnectionError("offline")):
+            response = network.NetworkUtilities().get("https://api.github.com")
+        self.network.NetworkUtilities.return_value.get.return_value = response
+        self.assertIsNone(self.checker.check_binary_updates())
+
 
 if __name__ == "__main__":
     unittest.main()

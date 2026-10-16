@@ -298,7 +298,6 @@ class InstallOCFrame(wx.Frame):
                         global_constants=self.constants,
                         screen_location=self.GetPosition()
                     )
-                    popup_message.ShowModal()
                     self.Destroy()
                 return
 

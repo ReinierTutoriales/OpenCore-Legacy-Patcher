@@ -2,7 +2,7 @@ import logging
 import traceback
 import types
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from method_loader import load_method
 
@@ -48,3 +48,23 @@ class WorkerTests(unittest.TestCase):
                 method = load_method("opencore_legacy_patcher/wx_gui/gui_sys_patch_start.py", "SysPatchStartFrame", method_name, self.namespace)
                 method(self.worker, {})
                 self.assertEqual(self.logger.handlers, handlers)
+
+    def test_accepting_root_patch_prompt_does_not_show_it_again(self):
+        wx = MagicMock()
+        wx.YES_NO, wx.YES_DEFAULT, wx.ID_YES = 1, 2, 3
+        dialog = wx.MessageDialog.return_value
+        dialog.GetReturnCode.return_value = wx.ID_YES
+        stages = types.SimpleNamespace(INACTIVE=0, UNPATCHING=4)
+        gui_support = types.SimpleNamespace(AutoUpdateStages=stages, wait_for_thread=Mock())
+        patch_display = Mock()
+        namespace = {"wx": wx, "threading": types.SimpleNamespace(Thread=Mock()), "gui_support": gui_support, "os_data": types.SimpleNamespace(os_data=types.SimpleNamespace(big_sur=20)), "gui_sys_patch_display": patch_display}
+        method = load_method("opencore_legacy_patcher/wx_gui/gui_install_oc.py", "InstallOCFrame", "_invoke_install_oc", namespace)
+        self.worker.constants.update_stage = 1
+        self.worker.constants.detected_os = 25
+        self.worker.title = "Install"
+        for name in ("_install_oc", "Hide", "GetPosition", "Destroy"):
+            setattr(self.worker, name, Mock())
+        method(self.worker, "disk2s1")
+        dialog.ShowModal.assert_called_once()
+        patch_display.SysPatchDisplayFrame.assert_called_once()
+        self.worker.Destroy.assert_called_once()

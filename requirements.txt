@@ -1,10 +1,12 @@
-requests
-pyobjc
-wxpython
-pyinstaller
-packaging
-py_sip_xnu
-py-applescript
-markdown2
-macos-pkg-builder
-mac-signing-buddy
+requests==2.34.2
+# Cocoa includes the Foundation/CoreFoundation bindings used by the application.
+# Avoid installing every optional macOS framework via the pyobjc metapackage.
+pyobjc-framework-Cocoa==12.2.2
+wxpython==4.3.2
+pyinstaller==6.22.3
+packaging==26.3
+py_sip_xnu==1.0.4
+py-applescript==1.0.3
+markdown2==2.5.5
+macos-pkg-builder==2.3.0
+mac-signing-buddy==1.0.0

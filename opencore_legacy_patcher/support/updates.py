@@ -15,9 +15,6 @@ from . import network_handler
 from .. import constants
 
 
-REPO_LATEST_RELEASE_URL: str = "https://api.github.com/repos/dortania/OpenCore-Legacy-Patcher/releases/latest"
-
-
 class CheckBinaryUpdates:
     def __init__(self, global_constants: constants.Constants) -> None:
         self.constants: constants.Constants = global_constants
@@ -95,13 +92,35 @@ class CheckBinaryUpdates:
             # We already checked
             return self.latest_details
 
-        if not network_handler.NetworkUtilities(REPO_LATEST_RELEASE_URL).verify_network_connection():
-            return None
-
-        response = network_handler.NetworkUtilities().get(REPO_LATEST_RELEASE_URL)
-        data_set = response.json()
-
-        if "tag_name" not in data_set:
+        repo = self.constants.repo_link.removeprefix("https://github.com/").rstrip("/")
+        url = f"https://api.github.com/repos/{repo}/releases"
+        try:
+            response = network_handler.NetworkUtilities().get(url, timeout=(5, 15))
+            response.raise_for_status()
+            releases = response.json()
+            if not isinstance(releases, list):
+                return None
+            candidates = []
+            for release in releases:
+                if not isinstance(release, dict) or release.get("draft"):
+                    continue
+                if release.get("prerelease") and not self.binary_version.is_prerelease:
+                    continue
+                try:
+                    release_version = version.parse(release.get("tag_name", ""))
+                except (version.InvalidVersion, TypeError):
+                    continue
+                if release_version.is_prerelease and not self.binary_version.is_prerelease:
+                    continue
+                if not isinstance(release.get("assets"), list):
+                    continue
+                if any(self._valid_package(asset) for asset in release["assets"]):
+                    candidates.append((release_version, release))
+            if not candidates:
+                return None
+            _, data_set = max(candidates, key=lambda item: item[0])
+        except (ValueError, network_handler.requests.exceptions.RequestException) as error:
+            logging.warning("Unable to check patcher updates: %s", error)
             return None
 
         # The release marked as latest will always be stable, and thus, have a proper version number
@@ -115,14 +134,21 @@ class CheckBinaryUpdates:
             return None
 
         for asset in data_set["assets"]:
-            logging.info(f"Found asset: {asset['name']}")
-            if asset["name"] == "OpenCore-Patcher.pkg":
+            if self._valid_package(asset):
                 self.latest_details = {
                     "Name": asset["name"],
                     "Version": latest_remote_version,
-                    "Link": asset["browser_download_url"],
-                    "Github Link": f"https://github.com/dortania/OpenCore-Legacy-Patcher/releases/{latest_remote_version}",
+                    "Link": asset.get("browser_download_url", ""),
+                    "Github Link": f"{self.constants.repo_link}/releases/tag/{data_set['tag_name']}",
                 }
                 return self.latest_details
 
         return None
+
+    def _valid_package(self, asset) -> bool:
+        return (
+            isinstance(asset, dict)
+            and asset.get("name") == "OpenCore-Patcher.pkg"
+            and isinstance(asset.get("browser_download_url"), str)
+            and asset["browser_download_url"].startswith(f"{self.constants.repo_link}/releases/download/")
+        )

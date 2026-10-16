@@ -1,81 +1,77 @@
-name: Build
+name: Build fork candidate
 
 on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+  push:
+    branches: [main, 'upgrade/**']
+    paths-ignore:
+      - 'docs/**'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: candidate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    name: Build
+    name: Validate and package Intel candidate
     runs-on: macos-15-intel
     timeout-minutes: 120
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: TechPrototyper/OpenCore-Legacy-Patcher
-          ref: main
-          fetch-depth: 1
-
-      - name: Setup Python 3.11
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Prepare spec
+          cache: pip
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip check
+          python -m pip freeze > resolved-dependencies.txt
+      - name: Verify payload inventory and regression tests
         run: |
           test "$(uname -m)" = "x86_64"
-          sed -i '' 's/target_arch="universal2"/target_arch="x86_64"/' OpenCore-Patcher-GUI.spec
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip wheel setuptools
-          python -m pip install -r requirements.txt
-
+          python ci_tooling/verify_components.py
+          python -m unittest discover -s tests -v
+          python -m compileall -q opencore_legacy_patcher ci_tooling
+      - name: Validate generated configurations and root patch resources
+        run: python OpenCore-Patcher-GUI.command --validate
       - name: Prepare assets
-        run: |
-          python Build-Project.command --run-as-individual-steps --reset-dmg-cache --prepare-assets
-
+        run: python Build-Project.command --run-as-individual-steps --reset-dmg-cache --prepare-assets
       - name: Prepare application
-        run: |
-          python Build-Project.command --run-as-individual-steps --reset-pyinstaller-cache --prepare-application
-
-      - name: Prepare package
-        run: |
-          python Build-Project.command --run-as-individual-steps --prepare-package
-          ls -lh dist/*.pkg
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: OpenCore-Patcher
-          path: |
-            dist/OpenCore-Patcher.pkg
-            dist/OpenCore-Patcher-Uninstaller.pkg
-            dist/AutoPkg-Assets.pkg
-          if-no-files-found: error
-
-      - name: Release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_REF: ${{ github.ref }}
+          BUILD_SHA: ${{ github.sha }}
+        run: >
+          python Build-Project.command --run-as-individual-steps
+          --reset-pyinstaller-cache --prepare-application
+          --git-branch "$BUILD_REF"
+          --git-commit-url "https://github.com/$GITHUB_REPOSITORY/commit/$BUILD_SHA"
+      - name: Prepare package
+        run: python Build-Project.command --run-as-individual-steps --prepare-package
+      - name: Check packaged application can launch its CLI
+        run: dist/OpenCore-Patcher.app/Contents/MacOS/OpenCore-Patcher --help
+      - name: Record checksums and build provenance
         run: |
-          set -e
-          OWNER_REPO="${GITHUB_REPOSITORY}"
-          for i in 1 2 3 4 5; do
-            gh release delete 2.5.0 --repo "$OWNER_REPO" --yes --cleanup-tag 2>/dev/null || true
-            if gh release create 2.5.0 \
-              dist/OpenCore-Patcher.pkg \
-              dist/OpenCore-Patcher-Uninstaller.pkg \
-              dist/AutoPkg-Assets.pkg \
-              --repo "$OWNER_REPO" \
-              --title "2.5.0" \
-              --latest; then
-              exit 0
-            fi
-            echo "retry $i"
-            sleep 20
-          done
-          exit 1
+          python ci_tooling/build_provenance.py
+          shasum -a 256 dist/*.pkg > dist/SHA256SUMS.txt
+          cp resolved-dependencies.txt dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenCore-Patcher-Intel-candidate
+          path: |
+            dist/*.pkg
+            dist/SHA256SUMS.txt
+            dist/build-provenance.json
+            dist/resolved-dependencies.txt
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AutoPkg-Assets.pkg
+          path: dist/AutoPkg-Assets.pkg
+          if-no-files-found: error

@@ -16,11 +16,10 @@ sys.path.append(os.path.abspath(os.getcwd()))
 
 from opencore_legacy_patcher import constants
 
-block_cipher = None
-
 datas = [
    ('payloads.dmg', '.'),
    ('Universal-Binaries.dmg', '.'),
+   ('opencore_legacy_patcher/wx_gui/credits.html', 'opencore_legacy_patcher/wx_gui'),
 ]
 
 if Path("DortaniaInternalResources.dmg").exists():
@@ -46,29 +45,9 @@ a = Analysis(['OpenCore-Patcher-GUI.command'],
              hooksconfig={},
              runtime_hooks=[],
              excludes=[],
-             win_no_prefer_redirects=False,
-             win_private_assemblies=False,
-             cipher=block_cipher,
              noarchive=False)
 
-pyz = PYZ(a.pure,
-          a.zipped_data,
-          cipher=block_cipher)
-
-_exe_kwargs = dict(
-          pyz=pyz,
-          a_scripts=a.scripts,
-          exclude_binaries=True,
-          name='OpenCore-Patcher',
-          debug=False,
-          bootloader_ignore_signals=False,
-          strip=False,
-          upx=True,
-          console=False,
-          disable_windowed_traceback=False,
-          codesign_identity=None,
-          entitlements_file=None,
-)
+pyz = PYZ(a.pure)
 # PyInstaller EXE signature uses positional for scripts list
 exe = EXE(pyz,
           a.scripts,
@@ -87,7 +66,6 @@ exe = EXE(pyz,
 
 coll = COLLECT(exe,
                a.binaries,
-               a.zipfiles,
                a.datas,
                strip=False,
                upx=True,
@@ -100,8 +78,8 @@ app = BUNDLE(coll,
              bundle_identifier="com.dortania.opencore-legacy-patcher",
              info_plist={
                 "CFBundleName": "OpenCore Legacy Patcher",
-                "CFBundleVersion": constants.Constants().patcher_version,
-                "CFBundleShortVersionString": constants.Constants().patcher_version,
+                "CFBundleVersion": constants.Constants().patcher_version.split("-")[0],
+                "CFBundleShortVersionString": constants.Constants().patcher_version.split("-")[0],
                 "NSHumanReadableCopyright": constants.Constants().copyright_date,
                 "LSMinimumSystemVersion": "10.10.0",
                 "NSRequiresAquaSystemAppearance": False,
@@ -109,4 +87,5 @@ app = BUNDLE(coll,
                 "Build Date": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
                 "BuildMachineOSBuild": subprocess.run(["/usr/bin/sw_vers", "-buildVersion"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.decode().strip(),
                 "NSPrincipalClass": "NSApplication",
+                "CFBundleIconName": "oclp",
              })

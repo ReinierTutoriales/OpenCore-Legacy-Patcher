@@ -13,40 +13,42 @@ from .detections import device_probe
 class Constants:
     def __init__(self) -> None:
         # Patcher Versioning
-        self.patcher_version:                 str = "2.5.0"  # OpenCore-Legacy-Patcher
-        self.patcher_support_pkg_version:     str = "1.9.6"  # PatcherSupportPkg
-        self.copyright_date:                  str = "Copyright © 2020-2026 Dortania"
+        self.patcher_version:                 str = "3.0.0-rc.3"  # Fork based on the upstream release candidate
+        self.patcher_support_pkg_version:     str = "2.0.3"  # PatcherSupportPkg
+        self.copyright_date:                  str = "Copyright © 2020-2026 Dortania and OpenCore Legacy Patcher contributors"
         self.patcher_name:                    str = "OpenCore Legacy Patcher"
 
         # URLs
         self.url_patcher_support_pkg:         str = "https://github.com/dortania/PatcherSupportPkg/releases/download/"
         self.discord_link:                    str = "https://discord.gg/rqdPgH8xSN"
         self.guide_link:                      str = "https://dortania.github.io/OpenCore-Legacy-Patcher/"
-        self.repo_link:                       str = "https://github.com/dortania/OpenCore-Legacy-Patcher"
+        self.repo_link:                       str = "https://github.com/ReinierTutoriales/OpenCore-Legacy-Patcher"
         self.installer_pkg_url:               str = f"{self.repo_link}/releases/download/{self.patcher_version}/AutoPkg-Assets.pkg"
-        self.installer_pkg_url_nightly:       str = "http://nightly.link/dortania/OpenCore-Legacy-Patcher/workflows/build-app-wxpython/main/AutoPkg-Assets.pkg.zip"
+        self.installer_pkg_url_nightly:       str = "https://nightly.link/ReinierTutoriales/OpenCore-Legacy-Patcher/workflows/build-release/main/AutoPkg-Assets.pkg.zip"
 
         # OpenCore Versioning
         # https://github.com/acidanthera/OpenCorePkg
-        self.opencore_version: str = "1.0.4"
+        self.opencore_version: str = "1.0.8"
 
         # Kext Versioning
         ## Acidanthera
         ## https://github.com/acidanthera
-        self.lilu_version:               str = "1.7.1"  #      Lilu
-        self.whatevergreen_version:      str = "1.6.9"  #      WhateverGreen
+        self.lilu_version:               str = "1.7.2"  #      Lilu
+        self.whatevergreen_version:      str = "1.7.1"  #      WhateverGreen
         self.whatevergreen_navi_version: str = "1.6.9-Navi"  # WhateverGreen (Navi Patch)
-        self.airportbcrmfixup_version:   str = "2.1.9"  #      AirPortBrcmFixup
-        self.nvmefix_version:            str = "1.1.2"  #      NVMeFix
+        self.airportbcrmfixup_version:   str = "2.2.1"  #      AirPortBrcmFixup
+        self.nvmefix_version:            str = "1.1.3"  #      NVMeFix
         self.applealc_version:           str = "1.6.3"  #      AppleALC
+        self.applealc_latest_version:    str = "1.9.8"  # Opt-in: upstream documents a legacy-audio regression
+        self.use_latest_applealc:        bool = False
         self.restrictevents_version:     str = "1.1.7"  #      RestrictEvents
-        self.featureunlock_version:      str = "1.1.7"  #      FeatureUnlock
-        self.debugenhancer_version:      str = "1.1.0"  #      DebugEnhancer
-        self.cpufriend_version:          str = "1.2.9"  #      CPUFriend
-        self.bluetool_version:           str = "2.6.9"  #      BlueToolFixup (BrcmPatchRAM)
+        self.featureunlock_version:      str = "1.1.8"  #      FeatureUnlock
+        self.debugenhancer_version:      str = "1.1.1"  #      DebugEnhancer
+        self.cpufriend_version:          str = "1.3.0"  #      CPUFriend
+        self.bluetool_version:           str = "2.7.2"  #      BlueToolFixup (BrcmPatchRAM)
         self.cslvfixup_version:          str = "2.6.1"  #      CSLVFixup
         self.autopkg_version:            str = "1.0.4"  #      AutoPkgInstaller
-        self.cryptexfixup_version:       str = "1.0.4"  #      CryptexFixup
+        self.cryptexfixup_version:       str = "1.0.5"  #      CryptexFixup
 
         ## Apple
         ## https://www.apple.com
@@ -70,6 +72,7 @@ class Constants:
         self.apple_camera_version:  str = "1.0.0"  #  AppleCameraInterface (14.0 Beta 1)
         self.t1_sse_version:        str = "1.1.0"  #  AppleSSE      (13.6 - T1 support)
         self.t1_key_store_version:  str = "1.1.0"  #  AppleKeyStore (13.6 - T1 support)
+        self.t1_key_store_tahoe_version: str = "1.2.0"
         self.t1_credential_version: str = "1.0.0"  #  AppleCredentialManager (13.6 - T1 support)
         self.t1_corecrypto_version: str = "1.0.1"  #  corecrypto    (13.6 - T1 support)
         self.apple_spi_version:     str = "1.0.0"  #  AppleHSSPISupport   (14.4 Beta 1)
@@ -83,6 +86,8 @@ class Constants:
         self.io80211elcap_version:     str = "2.0.1"  # IO80211ElCap
         self.io80211legacy_version:    str = "1.0.0"  # IO80211FamilyLegacy (Ventura)
         self.ioskywalk_version:        str = "1.2.0"  # IOSkywalkFamily (Ventura)
+        self.airport_atheros_tahoe_version: str = "1.0.0"
+        self.airport_brcmnic_tahoe_version: str = "1.0.0"
         self.bigsursdxc_version:       str = "1.0.0"  # BigSurSDXC
         self.monterey_ahci_version:    str = "1.0.0"  # CatalinaAHCI
 
@@ -249,6 +254,7 @@ class Constants:
             os_data.os_data.ventura,
             os_data.os_data.sonoma,
             os_data.os_data.sequoia,
+            os_data.os_data.tahoe,
         ]
 
     @property
@@ -276,7 +282,12 @@ class Constants:
 
     @property
     def overlay_psp_path_dmg(self):
-        return self.original_path / Path("DortaniaInternalResources.dmg")
+        overlay_path = self.original_path / Path("DortaniaInternalResources.dmg")
+        if not overlay_path.is_file() and Path("~/.dortania_developer").expanduser().exists():
+            home_overlay_path = Path("~/DortaniaInternalResources.dmg").expanduser()
+            if home_overlay_path.is_file():
+                return home_overlay_path
+        return overlay_path
 
     # OpenCore
     @property
@@ -322,6 +333,10 @@ class Constants:
         return self.payload_path / Path("ACPI/SSDT-DGPU.aml")
 
     # Drivers
+    @property
+    def sequoia_apfs_driver_path(self):
+        return self.payload_path / Path("Drivers/apfs_aligned.efi")
+
     @property
     def nvme_driver_path(self):
         return self.payload_path / Path("Drivers/NvmExpressDxe.efi")
@@ -464,6 +479,10 @@ class Constants:
         return self.payload_kexts_path / Path(f"Misc/AppleKeyStore-v{self.t1_key_store_version}.zip")
 
     @property
+    def t1_key_store_tahoe_path(self):
+        return self.payload_kexts_path / Path(f"Misc/AppleKeyStore-Tahoe-v{self.t1_key_store_tahoe_version}.zip")
+
+    @property
     def t1_credential_path(self):
         return self.payload_kexts_path / Path(f"Misc/AppleCredentialManager-v{self.t1_credential_version}.zip")
 
@@ -512,8 +531,20 @@ class Constants:
         return self.payload_kexts_path / Path(f"Wifi/IOSkywalkFamily-v{self.ioskywalk_version}.zip")
 
     @property
+    def airport_atheros_tahoe_path(self):
+        return self.payload_kexts_path / Path(f"Wifi/AirPortAtheros40-Tahoe-v{self.airport_atheros_tahoe_version}.zip")
+
+    @property
+    def airport_brcmnic_tahoe_path(self):
+        return self.payload_kexts_path / Path(f"Wifi/AirPortBrcmNIC-Tahoe-v{self.airport_brcmnic_tahoe_version}.zip")
+
+    @property
     def applealc_path(self):
-        return self.payload_kexts_path / Path(f"Acidanthera/AppleALC-v{self.applealc_version}-{self.kext_variant}.zip")
+        return self.payload_kexts_path / Path(f"Acidanthera/AppleALC-v{self.selected_applealc_version}-{self.kext_variant}.zip")
+
+    @property
+    def selected_applealc_version(self):
+        return self.applealc_latest_version if self.use_latest_applealc else self.applealc_version
 
     @property
     def piixata_path(self):
@@ -686,8 +717,16 @@ class Constants:
         return self.kexts_path / Path("USB-Map.kext")
 
     @property
+    def map_kext_folder_tahoe(self):
+        return self.kexts_path / Path("USB-Map-Tahoe.kext")
+
+    @property
     def map_contents_folder(self):
         return self.map_kext_folder / Path("Contents")
+
+    @property
+    def map_contents_folder_tahoe(self):
+        return self.map_kext_folder_tahoe / Path("Contents")
 
     @property
     def pp_kext_folder(self):
@@ -795,6 +834,10 @@ class Constants:
         return self.icns_resource_path / Path("Sequoia.icns")
 
     @property
+    def icon_path_macos_tahoe(self):
+        return self.icns_resource_path / Path("Tahoe.icns")
+
+    @property
     def gui_path(self):
         return self.payload_path / Path("Icon/Resources.zip")
 
@@ -828,6 +871,7 @@ class Constants:
             str(self.icon_path_macos_ventura),
             str(self.icon_path_macos_sonoma),
             str(self.icon_path_macos_sequoia),
+            str(self.icon_path_macos_tahoe),
         ]
 
     sbm_values = [

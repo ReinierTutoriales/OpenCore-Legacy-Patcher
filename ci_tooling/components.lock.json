@@ -1,0 +1,394 @@
+{
+  "upstream": {
+    "repository": "dortania/OpenCore-Legacy-Patcher",
+    "tag": "3.0.0-rc.3",
+    "commit": "238a876f9a08d405745ae25ef0fd563af6bc28e1",
+    "follow_up_commits": [
+      "a4b6a2ed38719f5e35ecdfebf11e7ab048d4076d",
+      "8da38565fa1551a8e5ce8613ea835d04dd97e089"
+    ]
+  },
+  "versions": {
+    "patcher_version": "3.0.0-rc.3",
+    "patcher_support_pkg_version": "2.0.3",
+    "opencore_version": "1.0.8",
+    "lilu_version": "1.7.2",
+    "whatevergreen_version": "1.7.1",
+    "whatevergreen_navi_version": "1.6.9-Navi",
+    "airportbcrmfixup_version": "2.2.1",
+    "nvmefix_version": "1.1.3",
+    "applealc_version": "1.6.3",
+    "applealc_latest_version": "1.9.8",
+    "restrictevents_version": "1.1.7",
+    "featureunlock_version": "1.1.8",
+    "debugenhancer_version": "1.1.1",
+    "cpufriend_version": "1.3.0",
+    "bluetool_version": "2.7.2",
+    "cslvfixup_version": "2.6.1",
+    "autopkg_version": "1.0.4",
+    "cryptexfixup_version": "1.0.5",
+    "marvel_version": "1.0.1",
+    "nforce_version": "1.0.1",
+    "piixata_version": "1.0.1",
+    "apple_isight_version": "1.0.0",
+    "apple_raid_version": "1.0.0",
+    "apfs_zlib_version": "12.3.1",
+    "apfs_zlib_v2_version": "12.6",
+    "multitouch_version": "1.0.0",
+    "topcase_version": "1.0.0",
+    "topcase_inj_version": "1.0.0",
+    "intel_82574l_version": "1.0.0",
+    "intel_8254x_version": "1.0.0",
+    "aicpupm_version": "1.0.0",
+    "s3x_nvme_version": "1.0.0",
+    "apple_camera_version": "1.0.0",
+    "t1_sse_version": "1.1.0",
+    "t1_key_store_version": "1.1.0",
+    "t1_key_store_tahoe_version": "1.2.0",
+    "t1_credential_version": "1.0.0",
+    "t1_corecrypto_version": "1.0.1",
+    "apple_spi_version": "1.0.0",
+    "apple_spi_hid_version": "1.0.0",
+    "kernel_relay_version": "1.0.0",
+    "bcm570_version": "1.0.2",
+    "i210_version": "1.0.0",
+    "corecaptureelcap_version": "1.0.2",
+    "io80211elcap_version": "2.0.1",
+    "io80211legacy_version": "1.0.0",
+    "ioskywalk_version": "1.2.0",
+    "airport_atheros_tahoe_version": "1.0.0",
+    "airport_brcmnic_tahoe_version": "1.0.0",
+    "bigsursdxc_version": "1.0.0",
+    "monterey_ahci_version": "1.0.0",
+    "aquantia_version": "1.1.0",
+    "backlight_injector_version": "1.1.0",
+    "backlight_injectorA_version": "1.0.0",
+    "smcspoof_version": "1.0.0",
+    "mce_version": "1.0.0",
+    "btspoof_version": "1.0.0",
+    "aspp_override_version": "1.0.1",
+    "ecm_override_version": "1.0.0",
+    "rsrhelper_version": "1.0.2",
+    "amfipass_version": "1.4.1",
+    "amfipass_compatibility_version": "1.2.1",
+    "mousse_version": "0.95-Dortania",
+    "telemetrap_version": "1.0.0",
+    "innie_version": "1.3.1",
+    "simplemsr_version": "1.0.0",
+    "gpu_wake_version": "1.0.0",
+    "kdkless_version": "1.0.0",
+    "detected_os_version": ""
+  },
+  "support_package": {
+    "version": "2.0.3",
+    "name": "Universal-Binaries.dmg",
+    "url": "https://github.com/dortania/PatcherSupportPkg/releases/download/2.0.3/Universal-Binaries.dmg",
+    "sha256": "cf2a80deafe153ed4a9aa32c63463032e02718f32713e9b3f0a6e09f9a6ffbab"
+  },
+  "source_releases": [
+    {
+      "repo": "acidanthera/OpenCorePkg",
+      "version": "1.0.8",
+      "assets": [
+        {
+          "name": "OpenCore-1.0.8-DEBUG.zip",
+          "url": "https://github.com/acidanthera/OpenCorePkg/releases/download/1.0.8/OpenCore-1.0.8-DEBUG.zip",
+          "sha256": "3f5f42b85703cf2c08e8dcd9245a52fb4326c9f4ef335c75b49f516cbbe131c6"
+        },
+        {
+          "name": "OpenCore-1.0.8-RELEASE.zip",
+          "url": "https://github.com/acidanthera/OpenCorePkg/releases/download/1.0.8/OpenCore-1.0.8-RELEASE.zip",
+          "sha256": "2011e8b7216ecb2645d97ea710df965947edd406846e92050b9bc4190be6d27b"
+        }
+      ]
+    },
+    {
+      "repo": "acidanthera/AppleALC",
+      "version": "1.9.8",
+      "assets": [
+        {
+          "name": "AppleALC-1.9.8-DEBUG.zip",
+          "url": "https://github.com/acidanthera/AppleALC/releases/download/1.9.8/AppleALC-1.9.8-DEBUG.zip",
+          "sha256": "12b5b2bd3d2dc97e018ddd48032f468d92e65472409f255f13795ba1b7b93d95"
+        },
+        {
+          "name": "AppleALC-1.9.8-RELEASE.zip",
+          "url": "https://github.com/acidanthera/AppleALC/releases/download/1.9.8/AppleALC-1.9.8-RELEASE.zip",
+          "sha256": "d4d36cd2da7863cf7cbfcb0892d45c08457f4f4ddd065a073dd010e46bd63bcb"
+        }
+      ]
+    },
+    {
+      "repo": "acidanthera/Lilu",
+      "version": "1.7.2",
+      "assets": [
+        {
+          "name": "Lilu-1.7.2-DEBUG.zip",
+          "url": "https://github.com/acidanthera/Lilu/releases/download/1.7.2/Lilu-1.7.2-DEBUG.zip",
+          "sha256": "e95df95d82e8b151047abf359ecd9c853755c59293e19dfcc3907da8fbd8cf89"
+        },
+        {
+          "name": "Lilu-1.7.2-RELEASE.zip",
+          "url": "https://github.com/acidanthera/Lilu/releases/download/1.7.2/Lilu-1.7.2-RELEASE.zip",
+          "sha256": "53967d7dcfaab01023a33df2e969a89522f13d6654a6a56ac4711b62dabf3ab8"
+        }
+      ]
+    },
+    {
+      "repo": "acidanthera/WhateverGreen",
+      "version": "1.7.1",
+      "assets": [
+        {
+          "name": "WhateverGreen-1.7.1-DEBUG.zip",
+          "url": "https://github.com/acidanthera/WhateverGreen/releases/download/1.7.1/WhateverGreen-1.7.1-DEBUG.zip",
+          "sha256": "f6f4ff75239fd9dcc40bb432eaf1342f9ebf509a9581f54ba536af4f17f11680"
+        },
+        {
+          "name": "WhateverGreen-1.7.1-RELEASE.zip",
+          "url": "https://github.com/acidanthera/WhateverGreen/releases/download/1.7.1/WhateverGreen-1.7.1-RELEASE.zip",
+          "sha256": "1bfdd2d40290ecce237606db121cbc01d7041179f03394bd59660a2ed52e5c95"
+        }
+      ]
+    },
+    {
+      "repo": "acidanthera/AirportBrcmFixup",
+      "version": "2.2.1",
+      "assets": [
+        {
+          "name": "AirportBrcmFixup-2.2.1-DEBUG.zip",
+          "url": "https://github.com/acidanthera/AirportBrcmFixup/releases/download/2.2.1/AirportBrcmFixup-2.2.1-DEBUG.zip",
+          "sha256": "ec8564371c1341ca6a086ed7406f7fd3b658a680942138540b7f290168e492d0"
+        },
+        {
+          "name": "AirportBrcmFixup-2.2.1-RELEASE.zip",
+          "url": "https://github.com/acidanthera/AirportBrcmFixup/releases/download/2.2.1/AirportBrcmFixup-2.2.1-RELEASE.zip",
+          "sha256": "2432c8a62445ad2cdadcc59b73928f01f8bf42bcd3f4386e49bc63a1c91db06f"
+        }
+      ]
+    },
+    {
+      "repo": "acidanthera/NVMeFix",
+      "version": "1.1.3",
+      "assets": [
+        {
+          "name": "NVMeFix-1.1.3-DEBUG.zip",
+          "url": "https://github.com/acidanthera/NVMeFix/releases/download/1.1.3/NVMeFix-1.1.3-DEBUG.zip",
+          "sha256": "14bddc4d7336f5a781dd3201afd174ebe117b584e62f98e6f2acad50c8b5ffda"
+        },
+        {
+          "name": "NVMeFix-1.1.3-RELEASE.zip",
+          "url": "https://github.com/acidanthera/NVMeFix/releases/download/1.1.3/NVMeFix-1.1.3-RELEASE.zip",
+          "sha256": "e1d5657ab7ac31f69771708f7b80bf218ab9aa0b8e4c4fe6ff943983037e3dfb"
+        }
+      ]
+    },
+    {
+      "repo": "acidanthera/DebugEnhancer",
+      "version": "1.1.1",
+      "assets": [
+        {
+          "name": "DebugEnhancer-1.1.1-DEBUG.zip",
+          "url": "https://github.com/acidanthera/DebugEnhancer/releases/download/1.1.1/DebugEnhancer-1.1.1-DEBUG.zip",
+          "sha256": "533a023a3b50f77ca4b0b4c5a24cdd48dad8aebc0ce4e93eead88e8232fd6f1e"
+        },
+        {
+          "name": "DebugEnhancer-1.1.1-RELEASE.zip",
+          "url": "https://github.com/acidanthera/DebugEnhancer/releases/download/1.1.1/DebugEnhancer-1.1.1-RELEASE.zip",
+          "sha256": "2c0978c43fb6179fd5195ddec14c4dd9ab2eb46262021a33fcab78b5568ef67f"
+        }
+      ]
+    },
+    {
+      "repo": "acidanthera/FeatureUnlock",
+      "version": "1.1.8",
+      "assets": [
+        {
+          "name": "FeatureUnlock-1.1.8-DEBUG.zip",
+          "url": "https://github.com/acidanthera/FeatureUnlock/releases/download/1.1.8/FeatureUnlock-1.1.8-DEBUG.zip",
+          "sha256": "6be8a2a014eab25fd5032017c8c08910f34ee38590a7c91d40f0fa05c65c6721"
+        },
+        {
+          "name": "FeatureUnlock-1.1.8-RELEASE.zip",
+          "url": "https://github.com/acidanthera/FeatureUnlock/releases/download/1.1.8/FeatureUnlock-1.1.8-RELEASE.zip",
+          "sha256": "b1b85c31fe48fc899ac838b013c9b64a842f6f33265200b5ace3ecec5caa045c"
+        }
+      ]
+    },
+    {
+      "repo": "acidanthera/CPUFriend",
+      "version": "1.3.0",
+      "assets": [
+        {
+          "name": "CPUFriend-1.3.0-DEBUG.zip",
+          "url": "https://github.com/acidanthera/CPUFriend/releases/download/1.3.0/CPUFriend-1.3.0-DEBUG.zip",
+          "sha256": "0b11b6edee735a7b1f83e1a945ec2b684eb1d2ef56420c3d9f96ea38c2fcff91"
+        },
+        {
+          "name": "CPUFriend-1.3.0-RELEASE.zip",
+          "url": "https://github.com/acidanthera/CPUFriend/releases/download/1.3.0/CPUFriend-1.3.0-RELEASE.zip",
+          "sha256": "37645d960f0b3c958cfd0a8a041160532267ec535c4979897123df89c7dbdcde"
+        }
+      ]
+    },
+    {
+      "repo": "acidanthera/BrcmPatchRAM",
+      "version": "2.7.2",
+      "assets": [
+        {
+          "name": "BrcmPatchRAM-2.7.2-DEBUG.zip",
+          "url": "https://github.com/acidanthera/BrcmPatchRAM/releases/download/2.7.2/BrcmPatchRAM-2.7.2-DEBUG.zip",
+          "sha256": "268d1a9f32ca80db398b6d415242b01d8f70a5ccc861c6f86069c450abca5ac4"
+        },
+        {
+          "name": "BrcmPatchRAM-2.7.2-RELEASE.zip",
+          "url": "https://github.com/acidanthera/BrcmPatchRAM/releases/download/2.7.2/BrcmPatchRAM-2.7.2-RELEASE.zip",
+          "sha256": "e1c1c55347526d031a8ae2fdd1f52efa3019161e497fb38e1cfa809752f8af21"
+        }
+      ]
+    },
+    {
+      "repo": "acidanthera/CryptexFixup",
+      "version": "1.0.5",
+      "assets": [
+        {
+          "name": "CryptexFixup-1.0.5-DEBUG.zip",
+          "url": "https://github.com/acidanthera/CryptexFixup/releases/download/1.0.5/CryptexFixup-1.0.5-DEBUG.zip",
+          "sha256": "8e528e8ae6d2585688b28de301b183c1391fbe8f7bfd9c603dfa5f5e6cc5658a"
+        },
+        {
+          "name": "CryptexFixup-1.0.5-RELEASE.zip",
+          "url": "https://github.com/acidanthera/CryptexFixup/releases/download/1.0.5/CryptexFixup-1.0.5-RELEASE.zip",
+          "sha256": "25041d94a0fe9a0261caf0ba89b36dfcb21682bf3c697a34bcaddc839576ab30"
+        }
+      ]
+    },
+    {
+      "repo": "dortania/PatcherSupportPkg",
+      "version": "2.0.3",
+      "assets": [
+        {
+          "name": "sha256sum.txt",
+          "url": "https://github.com/dortania/PatcherSupportPkg/releases/download/2.0.3/sha256sum.txt",
+          "sha256": "8933eeff72a2e5f5c92923a64d0773e10a01d79fa2faa6ce5326d6c3e9c17e16"
+        },
+        {
+          "name": "Universal-Binaries.dmg",
+          "url": "https://github.com/dortania/PatcherSupportPkg/releases/download/2.0.3/Universal-Binaries.dmg",
+          "sha256": "cf2a80deafe153ed4a9aa32c63463032e02718f32713e9b3f0a6e09f9a6ffbab"
+        }
+      ]
+    }
+  ],
+  "exceptions": {
+    "AppleALC": "1.6.3 remains default because upstream documents a legacy-audio regression; 1.9.8 is opt-in.",
+    "RestrictEvents": "Keep upstream rolling 1.1.7 (b70aaa4), newer than the latest tagged release 1.1.6.",
+    "WhateverGreen-Navi": "Keep upstream modified 1.6.9-Navi; stock 1.7.1 does not replace its backlight patch.",
+    "Apple and model-specific payloads": "Keep matched legacy versions from upstream, not replacements from newer macOS releases."
+  },
+  "files": {
+    "payloads/Drivers/AMDGOP.efi": "61e48de998bbea9cfb11a1586dfce8da5eb660b9d989439591f4abf609df417e",
+    "payloads/Drivers/ExFatDxeLegacy.efi": "8aa4ef72fbb282912ad307536623338ac8dea566d20ef9e309fb3fbb1fec2fc7",
+    "payloads/Drivers/FixPCIeLinkRate.efi": "3e43b8167d7a05ad300bc2590bad44b9fcc0fcae3765a3ccae6ef71045db6524",
+    "payloads/Drivers/NVGOP_GK.efi": "d12d15826bab4ecfb7de48444f9bfe578c4a44012c9d3665d196e2a5eb17039a",
+    "payloads/Drivers/NvmExpressDxe.efi": "a5af3aa9e6eca8b4179a4ed255679269e58ca65d1aa9b65b0afc23e0771246fb",
+    "payloads/Drivers/UsbBusDxe.efi": "ac600899d858a0fda3ed6432e37cf4e493ae6298bf8af011f435a273e7c43514",
+    "payloads/Drivers/XhciDxe.efi": "dc0b1df416eb82aefd397da56bf353a11fa5c4d3cb737c0f44c6a82641bad178",
+    "payloads/Drivers/apfs_aligned.efi": "1663fa54103cf808b45fda3f0385626d1f1899a9ed8258d21a827db4426ed408",
+    "payloads/Drivers/diags.efi": "023a4e1e856c5bc4aff50d57132391d690ec96e5982f3604f96bff94bc209a9b",
+    "payloads/Icon/Resources.zip": "2f148a43ab4ea0fca00efbd6a25ca2137fe99a14c7e2b1c70df870e871a1ed3b",
+    "payloads/Kexts/Acidanthera/AMFIPass-v1.4.1-RELEASE.zip": "07b266145906db41f4b13a7938fbb173ea28888cc1fa65f84417f8820adc961e",
+    "payloads/Kexts/Acidanthera/AirportBrcmFixup-v2.2.1-DEBUG.zip": "992786e680ae0cbe97c770e6d513875aabbe18f6d717936dda115e68b04ae517",
+    "payloads/Kexts/Acidanthera/AirportBrcmFixup-v2.2.1-RELEASE.zip": "6dbac239702afdd5425289b97056da1bc3552e662f66bbe28a66eade2c81842f",
+    "payloads/Kexts/Acidanthera/AppleALC-v1.6.3-DEBUG.zip": "167c896d26f29fe67e84675193579f63c817cc00b4a5d87504bb81fed813961c",
+    "payloads/Kexts/Acidanthera/AppleALC-v1.6.3-RELEASE.zip": "f0179f00351fcd630164478673cbccb84098122a47cea9afe1e2ecfbc56924ed",
+    "payloads/Kexts/Acidanthera/AppleALC-v1.9.8-DEBUG.zip": "6799ac45c39b9ce078795ad49179e6392af26f94896cbcce25f218e710891499",
+    "payloads/Kexts/Acidanthera/AppleALC-v1.9.8-RELEASE.zip": "66a175261b811a50cff38370d9380629d891518c66af8340be86204159d1a429",
+    "payloads/Kexts/Acidanthera/AutoPkgInstaller-v1.0.4-DEBUG.zip": "4016262212e5fa2e0524da571a8c764722295fe5877175c8e70b8336c38c02e7",
+    "payloads/Kexts/Acidanthera/AutoPkgInstaller-v1.0.4-RELEASE.zip": "91368c6e37002d19f5b8f39a6746790b8f73fc17a80fb27ab78d9ae743725745",
+    "payloads/Kexts/Acidanthera/BlueToolFixup-v2.7.2-DEBUG.zip": "1e219ded65124aec596c9572f8e63bfddc27140e870a86ad6e179bdeacf4a3ba",
+    "payloads/Kexts/Acidanthera/BlueToolFixup-v2.7.2-RELEASE.zip": "40f022093199ec405d38719257b2dc7f133579420a7c00f3111e43ccd4f2017a",
+    "payloads/Kexts/Acidanthera/CPUFriend-v1.3.0-DEBUG.zip": "cad87e6d9ae8e03e7156ea91c0f58b32c373e007f5cac0f359a98281f2b1120f",
+    "payloads/Kexts/Acidanthera/CPUFriend-v1.3.0-RELEASE.zip": "b2beac08ddb88e989e649660e7dc2ceae0d447624673372bfbbec5f2a5b913dd",
+    "payloads/Kexts/Acidanthera/CSLVFixup-v2.6.1.zip": "f23c6b62f6a9dbc9c5a392af2fd92c516a21ec4413ba0afa2954ce804230b74b",
+    "payloads/Kexts/Acidanthera/CryptexFixup-v1.0.5-DEBUG.zip": "a7086cc345523850cfecb5079534ca6ef5dfb618c174044fc162227aa181b7a4",
+    "payloads/Kexts/Acidanthera/CryptexFixup-v1.0.5-RELEASE.zip": "12c97db5d67c07debc413b1798467e3976ee43064ca92f8a7a42b139a5c1c38b",
+    "payloads/Kexts/Acidanthera/DebugEnhancer-v1.1.1-DEBUG.zip": "981d71f85fd0c80a60164a612a468c9f12c3d2b17512b0e162642e5fe0dd52ab",
+    "payloads/Kexts/Acidanthera/DebugEnhancer-v1.1.1-RELEASE.zip": "961cdbea637469cf246851ab8fbfc941dcb5035ee548077aaa3b589d9104f544",
+    "payloads/Kexts/Acidanthera/EFICheckDisabler.zip": "f626625ec0dbe681e16f67a93099b8a79a33426e1292b4135f9fa90a10ec9a7a",
+    "payloads/Kexts/Acidanthera/FeatureUnlock-v1.1.8-DEBUG.zip": "42823aee03dea26892e34ad12420195c3bb2364794b553ed469c37d4572ebbb6",
+    "payloads/Kexts/Acidanthera/FeatureUnlock-v1.1.8-RELEASE.zip": "95fb36a5d2a0fbd059bb2aaace633b62a9088160d55a745e033c33f41aebf43f",
+    "payloads/Kexts/Acidanthera/Lilu-v1.7.2-DEBUG.zip": "138e19c938500fa465aa64a91c386043cfe5a2f1dbbbfcd80f1d4287215b8499",
+    "payloads/Kexts/Acidanthera/Lilu-v1.7.2-RELEASE.zip": "25484ca24bef1ce75aa98741775201fcc282f01a8279d08a9c44f4adf48d1a48",
+    "payloads/Kexts/Acidanthera/NVMeFix-v1.1.3-DEBUG.zip": "32aee32e1deca5f0c25f2207f263b7cd458563596933173ba52594e962ff9e9c",
+    "payloads/Kexts/Acidanthera/NVMeFix-v1.1.3-RELEASE.zip": "d6551bd2fc7c0e7b58c5b4987c4811ca81ad5c2809877b9ca4fe5901e553efc4",
+    "payloads/Kexts/Acidanthera/RSRHelper-v1.0.2-DEBUG.zip": "1794c5350be357de20cfe9e9a8f844aab2aef884d392d0feedccbcbbc8d84536",
+    "payloads/Kexts/Acidanthera/RSRHelper-v1.0.2-RELEASE.zip": "7fa418a7aa35847826a2b7b603987495d5e79644a139866d447e2489b020e623",
+    "payloads/Kexts/Acidanthera/RestrictEvents-v1.1.7-DEBUG.zip": "22dc4bcbf8896305e06c744bb7d123cd4d0070dccc2f7bc94d1248bc34d76b19",
+    "payloads/Kexts/Acidanthera/RestrictEvents-v1.1.7-RELEASE.zip": "d11e278544a9f1104df60770d2cf2cc2573e8ecaee1dd6d291f4b552975af286",
+    "payloads/Kexts/Acidanthera/WhateverGreen-v1.6.9-Navi-DEBUG.zip": "6c5877ff80cbe4973012347545245d63471d9dea5634dde4d6ef7e44c250b788",
+    "payloads/Kexts/Acidanthera/WhateverGreen-v1.6.9-Navi-RELEASE.zip": "c7c841f1776f40009eeb0a1d23c697a49fb76be772ee14863d30abad78a91474",
+    "payloads/Kexts/Acidanthera/WhateverGreen-v1.7.1-DEBUG.zip": "b60b3163c397cada5a91c2c24454f21eaf61d68cdd9d2d7d29202eea5c8f89b2",
+    "payloads/Kexts/Acidanthera/WhateverGreen-v1.7.1-RELEASE.zip": "5431aa627a0dd2736aaed2d86d82228272c7b77eb1f6b5ec12af06ab9cf02a08",
+    "payloads/Kexts/Ethernet/AppleEthernetAbuantiaAqtion-v1.1.0.zip": "ace4171d9f5bb97d608438335a5184c18f520d0b1f60a0128d240d68cbca809f",
+    "payloads/Kexts/Ethernet/AppleIntel8254XEthernet-v1.0.0.zip": "992b4deb36fe6566fa9d9303312f078ad59134de8f42e5d8937e24ec40368f5c",
+    "payloads/Kexts/Ethernet/CatalinaBCM5701Ethernet-v1.0.2.zip": "da1d49bf724c66516f2116a66f1765ac54f544bf3c600d62c70fc74f974eaff2",
+    "payloads/Kexts/Ethernet/CatalinaIntelI210Ethernet-v1.0.0.zip": "cf4e3f6f71d4057ae2db261c81969c3263e866c122d07d3f13c46aa0db7a4aa9",
+    "payloads/Kexts/Ethernet/Intel82574L-v1.0.0.zip": "4a4163936cd6f1756ca151ce027bbfb006730dd38d413fe9ddf5b6a2d4cb1b9c",
+    "payloads/Kexts/Ethernet/MarvelYukonEthernet-v1.0.1.zip": "17d42b2ff6ca98b868354b984b169f53a6fbc1f2fd9f16d840f60a825741524b",
+    "payloads/Kexts/Ethernet/nForceEthernet-v1.0.1.zip": "2ec250dd1785bd3dc6fd0bf3e1ad59ccd6baa12916cc683b1b2bb8e553aa8d0c",
+    "payloads/Kexts/FireWire/IOFireWireFamily-v1.0.1.zip": "73ebca8ff13b9d40becbe3ae1cff3894e821db5244ec0648bff37034b3291a0b",
+    "payloads/Kexts/FireWire/IOFireWireSBP2-v1.0.1.zip": "1d457639a997e13000f2c16c9aa267764551517498816156789df6cf5d33b24c",
+    "payloads/Kexts/FireWire/IOFireWireSerialBusProtocolTransport-v1.0.1.zip": "1ac1bfbdddf6e0b2ad9409ba36caf63b6a9ac3c35270b5285e87d423fc225dd0",
+    "payloads/Kexts/Misc/AMDGPUWakeHandler-v1.0.0.zip": "9250a8b68649bddaaedff473167dd623f906bd6d276be4458890e996137fcc23",
+    "payloads/Kexts/Misc/ASPP-Override-v1.0.1.zip": "25049d8ce3f9d1251be36781abac4e2cc993d7bcfaf7e202f49544a99e723d5c",
+    "payloads/Kexts/Misc/AppleCameraInterface-v1.0.0.zip": "ec424098c4984cb9e18d8c5a8d5209fb48c4fbdf2dd7d9621c557c1e966799b0",
+    "payloads/Kexts/Misc/AppleCredentialManager-v1.0.0.zip": "6cd519c6321a5462585aa4c0bfad93735f700e4f31e53ee52671a627248fa734",
+    "payloads/Kexts/Misc/AppleHSSPIHIDDriver-v1.0.0.zip": "f84968828f599dc02ac427b8ca3727549e90c71ad27f85df1bb3b5133bfb6592",
+    "payloads/Kexts/Misc/AppleHSSPISupport-v1.0.0.zip": "9118becca176b0e1456ba48632cd3b5b6ce311681d95b690963479ef7e12f58c",
+    "payloads/Kexts/Misc/AppleIntelCPUPowerManagement-v1.0.0.zip": "8adeb0f3002387bb18d78c50100fa79f4939277b654e43d8f1178f0831e4f332",
+    "payloads/Kexts/Misc/AppleIntelCPUPowerManagementClient-v1.0.0.zip": "8d90f67dc7a94b61e80a0a3448248fa4246eb7271ecd049debfb3d90b6fdfd01",
+    "payloads/Kexts/Misc/AppleIntelPIIXATA-v1.0.1.zip": "21881386623651e5f6ffe82c7382cd9705214414d09229b2fa46100fcbcb5fa0",
+    "payloads/Kexts/Misc/AppleKeyStore-Tahoe-v1.2.0.zip": "0dfebbb54def9bad3d3e98d22e2a4d50cf9dd08a3822835534362b4a805b65a0",
+    "payloads/Kexts/Misc/AppleKeyStore-v1.1.0.zip": "670132dfe5ae341718eacd37424e5823dc356867dde467762c18aa3a35b14a99",
+    "payloads/Kexts/Misc/AppleMCEReporterDisabler-v1.0.0.zip": "79fb8659a4e8776fb3c8706d3e54e6f212579fb863d3823241ba0eca8ecb2a78",
+    "payloads/Kexts/Misc/AppleRAIDCard-v1.0.0.zip": "ee82656438f779064608da1049f546a13ca08934a5e3bee5206ea3d0dc213d1e",
+    "payloads/Kexts/Misc/AppleSSE-v1.1.0.zip": "805479ba3cdfe3b21f8482ab62afcfc3f71f708a8b45278dcfbe5d36d49c77be",
+    "payloads/Kexts/Misc/AppleTopCaseInjector-v1.0.0.zip": "b61af5e1f34f855d0fb77c3be4f0af25b5c97d0fa2a4e6e4dff78853bd581cd2",
+    "payloads/Kexts/Misc/AppleUSBMultitouch-v1.0.0.zip": "5bff0b1990429fe9044a4b844060fa3a0d7f355dec5fd8c946cd57366c3f9ffb",
+    "payloads/Kexts/Misc/AppleUSBTopCase-v1.0.0.zip": "dca622fb8b5f0f2c849f91f4b617545fa6ba604c27a904e19c473ed19fb752d4",
+    "payloads/Kexts/Misc/AppleUSBTrackpad-v1.0.1.zip": "4bc18d19e0a9ea3317d4d4b9da6c0f0b753ac8938294e636427f407719f8ee93",
+    "payloads/Kexts/Misc/BacklightInjector-v1.1.0.zip": "5bb38df5fa66aeae6d86d6b84dccae1c6dde001175789baec5c9e61aa1c72cbb",
+    "payloads/Kexts/Misc/BacklightInjectorA-v1.0.0.zip": "1c50afd187155512b73f8dff6991e0a7ccc225ec4a52e39b97e549d3bc27a3c3",
+    "payloads/Kexts/Misc/BigSurSDXC-v1.0.0.zip": "cae42ad863f5d4ae8a622ce1a9632f7268952fdeeb43306fe7f0d2be7275d3f8",
+    "payloads/Kexts/Misc/Bluetooth-Spoof-v1.0.0.zip": "b9457c3f970a14c87e8ff4e071ef762cfe6c84d4e3cc80065f25aceb056cd5be",
+    "payloads/Kexts/Misc/ECM-Override-v1.0.0.zip": "0e2834809eb86ef4d28269cfc13fdbaf8e191ba35ac2a9ef1f10d52d701999bf",
+    "payloads/Kexts/Misc/IOS3XeFamily-v1.0.0.zip": "64085d647d4a43ad527a5363bd3b74be9a149f65397fae5f07bc3a8d9d99999b",
+    "payloads/Kexts/Misc/Innie-v1.3.1-DEBUG.zip": "ec1605d4644fecf5d9d25f8f863383edca26a95b2f577b6e548a7ebbd3c1ff20",
+    "payloads/Kexts/Misc/Innie-v1.3.1-RELEASE.zip": "bec698972c1de1bcc235aac381bb59a6c1a5e11e9ddec6e5306c7e552d628a3f",
+    "payloads/Kexts/Misc/KDKlessWorkaround-v1.0.0-DEBUG.zip": "b9e10abb410f10b3f28bae91799e61803cee066b953384d0fd98793ad720b586",
+    "payloads/Kexts/Misc/KDKlessWorkaround-v1.0.0-RELEASE.zip": "8bdb85181d587cf8663e07f2853bc3e6ffa4712300b0dbcf954a97a25da6d0f1",
+    "payloads/Kexts/Misc/KernelRelayHost-v1.0.0.zip": "bac1ccc0ee6011e325ec1861f004d242eb3dd11f88b49341d189a9faf2482894",
+    "payloads/Kexts/Misc/LegacyKeyboardInjector-v1.0.0.zip": "659cc8b43ed64e30953fff106c0c75e9588704563ee2e3ef40bce353c0a4ca86",
+    "payloads/Kexts/Misc/LegacyUSBVideoSupport-v1.0.0.zip": "ada1e1383ec61641c37cac58853df71ad6f9d729c6888bce029f4c8c13a1a642",
+    "payloads/Kexts/Misc/MonteAHCIPort-v1.0.0.zip": "a7b48993f4907a5741329e0faa75fac3c7408d055b2d1a2776f96c0008f175d6",
+    "payloads/Kexts/Misc/NoAVXFSCompressionTypeZlib-AVXpel-v12.6.zip": "b5d6319d0a1f335684a92ecf23369bc3deb776be19e92b0a40860021409d20df",
+    "payloads/Kexts/Misc/NoAVXFSCompressionTypeZlib-v12.3.1.zip": "c29dca40d15cd626a29bd461299d3a475b91d6c71b9eb3bbf916e4a3c5e97d0b",
+    "payloads/Kexts/Misc/SMC-Spoof-v1.0.0.zip": "23a2386a114ffa283d254f904d80ff8ba5fffd809a1a1f96e62e013a4b8593bd",
+    "payloads/Kexts/Misc/SimpleMSR-v1.0.0.zip": "63ddeb7f5dbc77b3d249aa6bd4ea901c3a99f75c97e2405ffb78363e052b42df",
+    "payloads/Kexts/Misc/corecrypto_T1-v1.0.1.zip": "c357fa0ca4ea60277ba9c086fa459083eef6552b577f3ab8b9cd406dd954a380",
+    "payloads/Kexts/SSE/AAAMouSSE-v0.95-Dortania.zip": "73a7980813eea291d1f750ec288bc611cbcfff43fc560ec4fc96ce0c8467ded6",
+    "payloads/Kexts/SSE/AAAMouSSE-v0.95.zip": "ddc1bdc192162735fec79c66a2844638e7caaef09e6fd5404a8b3b9bb5d29cdd",
+    "payloads/Kexts/SSE/telemetrap-v1.0.0.zip": "609c068866aeb1953c67e29c65ca7d2925dbda593e5fe791e18c5c2e3fa1028a",
+    "payloads/Kexts/USB/USB1.1-Injector-v1.0.0.zip": "794b992280b9355d8f08bac0ab4acbfcb2c230c0d19ec17c33d55631ddba6f08",
+    "payloads/Kexts/Wifi/AirPortAtheros40-Tahoe-v1.0.0.zip": "e76697222592ba575c98052f81b864e5ba467e74b152f6374ec9ad6b06ff0415",
+    "payloads/Kexts/Wifi/AirPortBrcmNIC-Tahoe-v1.0.0.zip": "04edd7127ce096f5de9f8112af6d06744f27e5bc659e3d6516408755cb9af032",
+    "payloads/Kexts/Wifi/IO80211ElCap-v2.0.1.zip": "7fcf956d36d3c1f35fc16c2c6570b4b004224369497971dadb38ccba794e6327",
+    "payloads/Kexts/Wifi/IO80211FamilyLegacy-v1.0.0.zip": "e681dcc76a2cd2cea4b0ad5f27a3c816055fde3cdccd890dd10a3e2c84e96d93",
+    "payloads/Kexts/Wifi/IOSkywalkFamily-v1.2.0.zip": "1e12b7ef42f55b39ea54ada97b46331220668b2c48a28656e9875c5145fe2479",
+    "payloads/Kexts/Wifi/corecaptureElCap-v1.0.2.zip": "59dbbd272c3a796219ddfa43df5349731e2dd068047136b69109c64c6657a47f",
+    "payloads/OpenCore/OpenCore-DEBUG.zip": "117794610da46f121bf4d51ef84825efa21b419f454262f2d8905c4ade36e668",
+    "payloads/OpenCore/OpenCore-RELEASE.zip": "60d6f1b8c34deb15dccdbd5a8d60b378f5c1c6c067d149979d4ee892d11d56dc",
+    "payloads/OpenCore/macserial": "43cc5c78d663074de30e306627fa31836db6c92d542c06b33b9e3acdd1106cab",
+    "payloads/OpenCore/ocvalidate": "c76f907d5caad299889a2314ae68f03cd8538ad53f65a3c2c7c95ae0d0bb0b38"
+  }
+}

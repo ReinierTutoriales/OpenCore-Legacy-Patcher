@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 
 from . import utilities, subprocess_wrapper
+from .efi_transaction import install_efi
 
 from .. import constants
 
@@ -117,33 +118,12 @@ class tui_disk_installation:
             logging.info("EFI failed to mount!")
             return False
 
-        if (mount_path / Path("EFI/OC")).exists():
-            logging.info("Removing preexisting EFI/OC folder")
-            subprocess.run(["/bin/rm", "-rf", mount_path / Path("EFI/OC")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        if (mount_path / Path("System")).exists():
-            logging.info("Removing preexisting System folder")
-            subprocess.run(["/bin/rm", "-rf", mount_path / Path("System")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        if (mount_path / Path("boot.efi")).exists():
-            logging.info("Removing preexisting boot.efi")
-            subprocess.run(["/bin/rm", mount_path / Path("boot.efi")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        logging.info("Copying OpenCore onto EFI partition")
-        subprocess.run(["/bin/mkdir", "-p", mount_path / Path("EFI")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        subprocess.run(["/bin/cp", "-r", self.constants.opencore_release_folder / Path("EFI/OC"), mount_path / Path("EFI/OC")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        subprocess.run(["/bin/cp", "-r", self.constants.opencore_release_folder / Path("System"), mount_path / Path("System")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        if Path(self.constants.opencore_release_folder / Path("boot.efi")).exists():
-            subprocess.run(["/bin/cp", self.constants.opencore_release_folder / Path("boot.efi"), mount_path / Path("boot.efi")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        if self.constants.boot_efi is True:
-            logging.info("Converting Bootstrap to BOOTx64.efi")
-            if (mount_path / Path("EFI/BOOT")).exists():
-                subprocess.run(["/bin/rm", "-rf", mount_path / Path("EFI/BOOT")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            Path(mount_path / Path("EFI/BOOT")).mkdir()
-            subprocess.run(["/bin/mv", mount_path / Path("System/Library/CoreServices/boot.efi"), mount_path / Path("EFI/BOOT/BOOTx64.efi")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            subprocess.run(["/bin/rm", "-rf", mount_path / Path("System")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            backup = install_efi(self.constants.opencore_release_folder, mount_path, self.constants.boot_efi)
+        except (OSError, ValueError) as error:
+            logging.error("OpenCore installation failed: %s", error)
+            return False
+        logging.info("Previous boot files preserved at %s", backup)
 
         if self._determine_sd_card(sd_type) is True:
             logging.info("Adding SD Card icon")

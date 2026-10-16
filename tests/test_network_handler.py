@@ -141,6 +141,41 @@ class DownloadTests(unittest.TestCase):
             response.raise_for_status()
         response.close()
 
+    def test_cancellation_can_return_without_waiting_on_gui_thread(self):
+        download = self.network.DownloadObject("https://example.test/payload.pkg", self.destination)
+        thread = Mock()
+        download.active_thread = thread
+        try:
+            download.stop(wait=False)
+            self.assertTrue(download.should_stop)
+            thread.join.assert_not_called()
+        finally:
+            download.active_thread = None
+
+    def test_blocking_cancellation_waits_for_other_worker(self):
+        download = self.network.DownloadObject("https://example.test/payload.pkg", self.destination)
+        thread = Mock()
+        thread.is_alive.side_effect = [True, False]
+        download.active_thread = thread
+        try:
+            download.stop()
+            thread.join.assert_called_once()
+        finally:
+            download.active_thread = None
+
+    def test_worker_never_waits_for_itself_during_cleanup(self):
+        download = self.network.DownloadObject("https://example.test/payload.pkg", self.destination)
+        thread = Mock()
+        download.active_thread = thread
+        try:
+            with patch.object(self.network.threading, "current_thread", return_value=thread):
+                download.stop()
+            self.assertTrue(download.should_stop)
+            thread.is_alive.assert_not_called()
+            thread.join.assert_not_called()
+        finally:
+            download.active_thread = None
+
 
 if __name__ == "__main__":
     unittest.main()

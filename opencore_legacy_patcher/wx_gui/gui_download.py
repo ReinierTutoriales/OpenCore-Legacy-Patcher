@@ -103,6 +103,6 @@ class DownloadFrame(wx.Frame):
         if wx.MessageBox("Are you sure you want to cancel the download?", "Cancel Download", wx.YES_NO | wx.ICON_QUESTION | wx.NO_DEFAULT) == wx.YES:
             logging.info("User cancelled download")
             self.user_cancelled = True
-            self.download_obj.stop()
+            self.download_obj.stop(wait=False)
 
 

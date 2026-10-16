@@ -479,14 +479,14 @@ class DownloadObject:
         return False
 
 
-    def stop(self) -> None:
+    def stop(self, wait: bool = True) -> None:
         """
         Stop the download
 
-        If the download is active, this function will hold the thread until stopped
+        Wait for the worker by default. GUI callbacks can request cancellation
+        without blocking their event loop. A worker must never wait for itself.
         """
 
         self.should_stop = True
-        if self.active_thread:
-            while self.active_thread.is_alive():
-                time.sleep(1)
+        if wait and self.active_thread and self.active_thread is not threading.current_thread() and self.active_thread.is_alive():
+            self.active_thread.join()

@@ -127,8 +127,14 @@ class GaugePulseCallback:
             else:
                 self.gauge_value -= 1
 
-            wx.CallAfter(self.gauge.SetValue, self.gauge_value)
+            wx.CallAfter(self._set_value, self.gauge_value)
             time.sleep(0.005)
+
+
+    def _set_value(self, value: int) -> None:
+        # Queued events can outlive the animation or its native control.
+        if self.pulse_thread_active and self.gauge and not self.gauge.IsBeingDeleted():
+            self.gauge.SetValue(value)
 
 
 class CheckProperties:
@@ -274,7 +280,13 @@ class ThreadHandler(logging.Handler):
 
 
     def emit(self, record: logging.LogRecord):
-        wx.CallAfter(self.text_box.AppendText, self.format(record) + '\n')
+        wx.CallAfter(self._append_text, self.format(record) + '\n')
+
+
+    def _append_text(self, text: str) -> None:
+        # Check lifetime on the GUI thread, when the queued event is handled.
+        if self.text_box and not self.text_box.IsBeingDeleted():
+            self.text_box.AppendText(text)
 
 
 def wait_for_thread(thread: threading.Thread, sleep_interval=None):

@@ -52,6 +52,10 @@ class KernelDebugKitMerge:
         if not cs_path.exists():
             return
 
+        backup = self.constants.payload_path / "IOHIDEventDriver_CodeSignature.bak"
+        if backup.exists():
+            raise FileExistsError(f"A previous IOHID signature backup is still present: {backup}. Restore or inspect it before retrying.")
+
         logging.info("- Backing up IOHIDEventDriver CodeSignature")
         subprocess_wrapper.run_as_root_and_verify(generate_copy_arguments(cs_path, f"{self.constants.payload_path}/IOHIDEventDriver_CodeSignature.bak"), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 

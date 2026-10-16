@@ -76,6 +76,15 @@ class RootFileTests(unittest.TestCase):
             with self.assertRaises(Exception):
                 self.method("_backup_hid_cs")(self.worker)
 
+    def test_pending_signature_backup_is_not_overwritten_or_nested_on_retry(self):
+        self.make_backup()
+        with patch.object(self.wrapper, "run_as_root", side_effect=subprocess.run) as run:
+            with self.assertRaises(FileExistsError):
+                self.method("_backup_hid_cs")(self.worker)
+        run.assert_not_called()
+        self.assertEqual((self.backup / "CodeResources").read_text(), "original signature")
+        self.assertFalse((self.backup / "_CodeSignature").exists())
+
     def test_failed_kdk_merge_is_not_masked_by_preexisting_libkern(self):
         libkern = self.mount / "System/Library/Extensions/System.kext/PlugIns/Libkern.kext/Libkern"
         libkern.parent.mkdir(parents=True)

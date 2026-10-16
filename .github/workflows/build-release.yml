@@ -63,15 +63,24 @@ jobs:
           cp resolved-dependencies.txt dist/
       - uses: actions/upload-artifact@v4
         with:
-          name: OpenCore-Patcher-Intel-candidate
-          path: |
-            dist/*.pkg
-            dist/SHA256SUMS.txt
-            dist/build-provenance.json
-            dist/resolved-dependencies.txt
+          name: OpenCore-Patcher.pkg
+          path: dist/OpenCore-Patcher.pkg
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: AutoPkg-Assets.pkg
           path: dist/AutoPkg-Assets.pkg
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenCore-Patcher-Uninstaller.pkg
+          path: dist/OpenCore-Patcher-Uninstaller.pkg
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenCore-Patcher-Intel-build-info
+          path: |
+            dist/SHA256SUMS.txt
+            dist/build-provenance.json
+            dist/resolved-dependencies.txt
           if-no-files-found: error

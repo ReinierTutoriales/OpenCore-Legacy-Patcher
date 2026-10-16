@@ -39,7 +39,11 @@ python OpenCore-Patcher-GUI.command --validate
 
 Después comprueba que la aplicación empaquetada puede abrir su CLI. Los artefactos incluyen los paquetes, sus SHA-256, las dependencias resueltas y la procedencia del build. No se publican automáticamente como versión estable.
 
+Los tres paquetes se ofrecen individualmente, con los nombres del original: `OpenCore-Patcher.pkg`, `OpenCore-Patcher-Uninstaller.pkg` y `AutoPkg-Assets.pkg`. Los hashes y datos de compilación se entregan aparte en `OpenCore-Patcher-Intel-build-info`. Ya no se agrupan los dos paquetes grandes en una descarga conjunta ni se duplica AutoPkg. `AutoPkg-Assets.pkg` conserva el propósito definido por Dortania: lo utiliza el parcheador; para instalar la aplicación manualmente corresponde `OpenCore-Patcher.pkg`.
+
 El validador conserva el proceso original de Dortania: genera configuraciones para los modelos compatibles y las capturas de hardware, las comprueba con `ocvalidate` y revisa los recursos de los parches. El ejecutable `ocvalidate` coincide con el de OpenCore 1.0.8. Las comprobaciones de recursos incluyen Tahoe y respetan las versiones Darwin terminadas en `.0`, sin sustituirlas por la versión del equipo anfitrión. La imagen de recursos se desmonta también cuando falla una comprobación; si el desmontaje devuelve un error, solo se acepta como completado tras comprobar que el volumen ya no está montado.
+
+En el original revisado (`8da38565`), la comprobación de recursos recorre Darwin 20–24 (Big Sur–Sequoia), con versiones menores 0–9; este fork conserva esos casos y añade Darwin 25 (Tahoe), para un total de 60 combinaciones. El sistema anfitrión de la CI es distinto: Dortania usa su runner Intel Monterey y aquí se usa `macos-15-intel`. Los workflows originales `CI - Validation` y `CI - Build wxPython` están restringidos al propietario `dortania` y aparecen omitidos en un fork. Aquí se ejecutan `CI - Validation (External)` y `Build fork candidate`, que invocan el mismo punto de entrada `--validate`.
 
 ## Instalación y recuperación
 

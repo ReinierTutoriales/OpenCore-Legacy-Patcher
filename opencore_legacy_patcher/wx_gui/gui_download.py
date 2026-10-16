@@ -81,7 +81,7 @@ class DownloadFrame(wx.Frame):
                 progress_bar.Pulse()
             else:
                 amount_str = f"{utilities.seconds_to_readable_time(self.download_obj.get_time_remaining())}left - {utilities.human_fmt(self.download_obj.downloaded_file_size)} of {utilities.human_fmt(self.download_obj.total_file_size)} ({utilities.human_fmt(self.download_obj.get_speed())}/s)"
-                progress_bar.SetValue(int(percentage))
+                progress_bar.SetValue(min(100, max(0, int(percentage))))
 
             label_amount.SetLabel(amount_str)
             label_amount.Centre(wx.HORIZONTAL)

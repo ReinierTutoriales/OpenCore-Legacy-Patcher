@@ -335,13 +335,15 @@ class SysPatchStartFrame(wx.Frame):
 
     def _start_root_patching(self, patches: dict):
         logger = logging.getLogger()
-        logger.addHandler(gui_support.ThreadHandler(self.text_box))
+        handler = gui_support.ThreadHandler(self.text_box)
+        logger.addHandler(handler)
         try:
             sys_patch.PatchSysVolume(self.constants.computer.real_model, self.constants, patches).start_patch()
         except:
             logging.error("An internal error occurred while running the Root Patcher:\n")
             logging.error(traceback.format_exc())
-        logger.removeHandler(logger.handlers[2])
+        finally:
+            logger.removeHandler(handler)
 
 
     def revert_root_patching(self):
@@ -361,13 +363,15 @@ class SysPatchStartFrame(wx.Frame):
 
     def _revert_root_patching(self, patches: dict):
         logger = logging.getLogger()
-        logger.addHandler(gui_support.ThreadHandler(self.text_box))
+        handler = gui_support.ThreadHandler(self.text_box)
+        logger.addHandler(handler)
         try:
             sys_patch.PatchSysVolume(self.constants.computer.real_model, self.constants, patches).start_unpatch()
         except:
             logging.error("An internal error occurred while running the Root Patcher:\n")
             logging.error(traceback.format_exc())
-        logger.removeHandler(logger.handlers[2])
+        finally:
+            logger.removeHandler(handler)
 
 
     def on_return_to_main_menu(self, event: wx.Event = None):

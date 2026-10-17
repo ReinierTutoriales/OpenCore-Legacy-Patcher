@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 spec = importlib.util.spec_from_file_location("publish_candidate", Path(__file__).resolve().parents[1] / "ci_tooling/publish_candidate.py")
@@ -56,3 +57,9 @@ class ReleaseTests(unittest.TestCase):
         assets[0]["digest"] = "sha256:" + "0" * 64
         with self.assertRaisesRegex(ValueError, "Uploaded asset"):
             publish.verify_assets({"assets": assets}, expected)
+
+    def test_created_draft_is_used_without_a_second_list_query(self):
+        created = {"id": 123, "draft": True, "assets": []}
+        with patch.object(publish, "command", return_value=json.dumps(created)) as command, patch.object(publish, "find_release", side_effect=AssertionError("must not relist")), patch.object(publish.Path, "read_text", return_value="release notes"):
+            self.assertEqual(publish.create_release("owner/repo", "3.0.0-rc.3", "a" * 40), created)
+        self.assertIn("POST", command.call_args.args)

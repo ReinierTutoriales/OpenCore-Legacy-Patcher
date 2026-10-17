@@ -69,6 +69,17 @@ def find_release(repo, version):
         page += 1
 
 
+def create_release(repo, version, commit):
+    # Use the creation response: release-list caches may not show a new draft yet.
+    return json.loads(command(
+        "gh", "api", f"repos/{repo}/releases", "--method", "POST",
+        "-f", f"tag_name={version}", "-f", f"target_commitish={commit}",
+        "-f", f"name=OpenCore Legacy Patcher {version} — ReinierTutoriales",
+        "-F", "draft=true", "-F", "prerelease=true",
+        "-f", "body=" + Path("ci_tooling/release-notes-rc3.md").read_text(),
+    ))
+
+
 def main():
     repo, run_id, commit, version = (os.environ[k] for k in ("GH_REPO", "CANDIDATE_RUN_ID", "SOURCE_COMMIT", "RELEASE_VERSION"))
     if not re.fullmatch(r"[0-9]+", run_id) or not re.fullmatch(r"[a-f0-9]{40}", commit) or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+", version):
@@ -91,8 +102,7 @@ def main():
         print(f"Already published and verified: {release['html_url']}")
         return
     if release is None:
-        command("gh", "release", "create", version, "--target", commit, "--draft", "--prerelease", "--title", f"OpenCore Legacy Patcher {version} — ReinierTutoriales", "--notes-file", "ci_tooling/release-notes-rc3.md")
-        release = find_release(repo, version)
+        release = create_release(repo, version, commit)
     elif release["target_commitish"] != commit:
         raise ValueError("The existing draft targets a different source commit")
     endpoint = f"repos/{repo}/releases/{release['id']}"

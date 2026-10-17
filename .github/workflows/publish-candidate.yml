@@ -1,0 +1,33 @@
+name: Publish verified RC candidate
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-candidate.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: publish-3.0.0-rc.3
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'ReinierTutoriales/OpenCore-Legacy-Patcher'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      CANDIDATE_RUN_ID: '39062582425'
+      SOURCE_COMMIT: d2c9532f7d465d99fd2143338caa551b0b567c6e
+      RELEASE_VERSION: 3.0.0-rc.3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify source, download artifacts, check hashes and publish
+        run: python3 ci_tooling/publish_candidate.py

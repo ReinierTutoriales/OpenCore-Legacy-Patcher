@@ -438,16 +438,6 @@ class SettingsFrame(wx.Frame):
                         "a GOP ROM.",
                     ],
                 },
-                "Latest AppleALC (Experimental)": {
-                    "type": "checkbox",
-                    "value": self.constants.use_latest_applealc,
-                    "variable": "use_latest_applealc",
-                    "description": [
-                        "Use AppleALC 1.9.8 instead of 1.6.3.",
-                        "May break audio on legacy Macs.",
-                        "Test from USB before installing.",
-                    ],
-                },
                 "NVRAM WriteFlash": {
                     "type": "checkbox",
                     "value": self.constants.nvram_write,

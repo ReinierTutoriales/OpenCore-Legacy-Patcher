@@ -321,7 +321,7 @@ class BuildGraphicsAudio:
         """
 
         if (self.model in model_array.LegacyAudio or self.model in model_array.MacPro) and self.constants.set_alc_usage is True:
-            support.BuildSupport(self.model, self.constants, self.config).enable_kext("AppleALC.kext", self.constants.selected_applealc_version, self.constants.applealc_path)
+            support.BuildSupport(self.model, self.constants, self.config).enable_kext("AppleALC.kext", self.constants.applealc_version, self.constants.applealc_path)
 
         # Audio Patch
         if self.constants.set_alc_usage is True:
@@ -347,13 +347,13 @@ class BuildGraphicsAudio:
                             "use-apple-layout-id": 1,
                             "use-layout-id": 1,
                         }
-                    support.BuildSupport(self.model, self.constants, self.config).enable_kext("AppleALC.kext", self.constants.selected_applealc_version, self.constants.applealc_path)
+                    support.BuildSupport(self.model, self.constants, self.config).enable_kext("AppleALC.kext", self.constants.applealc_version, self.constants.applealc_path)
             elif (self.model.startswith("MacPro") and self.model != "MacPro6,1") or self.model.startswith("Xserve"):
                 # Used to enable Audio support for non-standard dGPUs
-                support.BuildSupport(self.model, self.constants, self.config).enable_kext("AppleALC.kext", self.constants.selected_applealc_version, self.constants.applealc_path)
+                support.BuildSupport(self.model, self.constants, self.config).enable_kext("AppleALC.kext", self.constants.applealc_version, self.constants.applealc_path)
 
         # Due to regression in AppleALC 1.6.4+, temporarily use 1.6.3 and set override
-        if not self.constants.use_latest_applealc and support.BuildSupport(self.model, self.constants, self.config).get_kext_by_bundle_path("AppleALC.kext")["Enabled"] is True:
+        if support.BuildSupport(self.model, self.constants, self.config).get_kext_by_bundle_path("AppleALC.kext")["Enabled"] is True:
             if "-lilubetaall" not in self.config["NVRAM"]["Add"]["7C436110-AB2A-4BBB-A880-FE41995C9F82"]["boot-args"]:
                 self.config["NVRAM"]["Add"]["7C436110-AB2A-4BBB-A880-FE41995C9F82"]["boot-args"] += " -lilubetaall"
 

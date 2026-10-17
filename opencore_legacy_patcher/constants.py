@@ -39,8 +39,6 @@ class Constants:
         self.airportbcrmfixup_version:   str = "2.2.1"  #      AirPortBrcmFixup
         self.nvmefix_version:            str = "1.1.3"  #      NVMeFix
         self.applealc_version:           str = "1.6.3"  #      AppleALC
-        self.applealc_latest_version:    str = "1.9.8"  # Opt-in: upstream documents a legacy-audio regression
-        self.use_latest_applealc:        bool = False
         self.restrictevents_version:     str = "1.1.7"  #      RestrictEvents
         self.featureunlock_version:      str = "1.1.8"  #      FeatureUnlock
         self.debugenhancer_version:      str = "1.1.1"  #      DebugEnhancer
@@ -540,11 +538,7 @@ class Constants:
 
     @property
     def applealc_path(self):
-        return self.payload_kexts_path / Path(f"Acidanthera/AppleALC-v{self.selected_applealc_version}-{self.kext_variant}.zip")
-
-    @property
-    def selected_applealc_version(self):
-        return self.applealc_latest_version if self.use_latest_applealc else self.applealc_version
+        return self.payload_kexts_path / Path(f"Acidanthera/AppleALC-v{self.applealc_version}-{self.kext_variant}.zip")
 
     @property
     def piixata_path(self):

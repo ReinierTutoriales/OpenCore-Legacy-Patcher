@@ -17,15 +17,25 @@ Fork experimental basado en **Dortania 3.0.0-rc.3**, con las actualizaciones ofi
 | DebugEnhancer | 1.1.1 |
 | CryptexFixup | 1.0.5 |
 | PatcherSupportPkg | 2.0.3 |
-| AppleALC | 1.6.3 por defecto; 1.9.8 opcional |
+| AppleALC | 1.6.3, igual que Dortania |
 
-`Settings → Extras → Latest AppleALC (Experimental)` permite probar 1.9.8. El valor predeterminado conserva 1.6.3 debido a la regresión de audio que documenta Dortania en `graphics_audio.py`. No se afirma que esa regresión esté resuelta en todos los Macs.
+`payloads/Kexts/Acidanthera` y `payloads/OpenCore` coinciden archivo por archivo con Dortania `8da38565`. Se retiró la opción experimental AppleALC 1.9.8 para conservar exactamente la selección oficial, incluida la excepción de audio 1.6.3. Los binarios principales de los ZIP de OpenCore coinciden con OpenCore 1.0.8, aunque el original todavía declara 1.0.5 en su constante; este fork conserva el identificador 1.0.8 que corresponde a esos binarios.
 
 RestrictEvents conserva la compilación rolling 1.1.7 de Dortania: la publicación etiquetada 1.1.6 es anterior. WhateverGreen 1.6.9-Navi conserva el parche especial de retroiluminación para Navi MXM. Las extensiones antiguas de Apple y los inyectores específicos de modelo siguen asociados al conjunto de parches de OCLP: sustituirlos por archivos de un macOS moderno elimina su propósito.
 
 `ci_tooling/components.lock.json` registra versiones, excepciones, fuentes y SHA-256 de los payloads. `requirements.txt` fija las dependencias Python directas a las versiones consultadas el 16-10-2026; Cocoa reemplaza al metapaquete completo PyObjC. La CI conserva también `pip freeze` para identificar las dependencias transitivas resueltas.
 
 ## Compilación y comprobaciones
+
+### Sincronización oficial
+
+`Sync Dortania candidate` comprueba diariamente a las 09:23 UTC el `main` de Dortania, y también permite una ejecución manual. Fusiona el código oficial completo en `auto-sync/dortania`, junto con OpenCore, kexts y referencias de versiones. Usa una fusión de tres vías: conserva las modificaciones del fork y detiene la ejecución si encuentra conflictos, sin elegir automáticamente una de las dos versiones.
+
+Abre un PR en borrador y solicita explícitamente `Build fork candidate` mediante `workflow_dispatch`, porque un push hecho con `GITHUB_TOKEN` no dispara los workflows normales de push. La validación incluye inventario, pruebas, configuraciones, recursos y empaquetado. No fusiona el PR ni publica una versión. Si el oficial cambia los archivos o versiones registrados en `components.lock.json`, la verificación exige revisar y actualizar el inventario; la automatización no acepta nuevos hashes a ciegas.
+
+El calendario solo queda activo cuando este workflow está integrado en `main`; mientras el PR #1 siga abierto, los enlaces a `main` muestran la versión anterior. GitHub debe permitir a Actions crear pull requests en este repositorio; si esa opción está deshabilitada, el trabajo lo indicará como un error de permisos. No requiere un token personal adicional.
+
+### Validación y paquetes
 
 El workflow **Build fork candidate** compila el commit de este repositorio en `macos-15-intel`, Python 3.11. No descarga la rama mutable de TechPrototyper ni elimina publicaciones o etiquetas existentes.
 

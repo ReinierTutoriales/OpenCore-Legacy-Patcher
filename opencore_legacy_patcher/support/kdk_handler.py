@@ -124,7 +124,15 @@ class KernelDebugKitObject:
             logging.info("Could not fetch KDK list")
             return None
 
-        KDK_ASSET_LIST = results.json()
+        try:
+            assets = results.json()
+        except ValueError:
+            logging.warning("KDK API returned invalid JSON")
+            return None
+        if not isinstance(assets, list) or not all(isinstance(asset, dict) and all(key in asset for key in ("build", "version", "url", "fileSize")) for asset in assets):
+            logging.warning("KDK API returned an invalid manifest")
+            return None
+        KDK_ASSET_LIST = assets
 
         return KDK_ASSET_LIST
 

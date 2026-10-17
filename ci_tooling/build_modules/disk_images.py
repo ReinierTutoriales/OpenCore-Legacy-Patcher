@@ -2,7 +2,10 @@
 disk_images.py: Fetch and generate disk images (Universal-Binaries.dmg, payloads.dmg)
 """
 
+import hashlib
+import json
 import subprocess
+import urllib.request
 
 from pathlib import Path
 
@@ -98,6 +101,9 @@ class GenerateDiskImages:
 
         print("Downloading required resources...")
         for resource in required_resources:
+            expected = json.loads(Path("ci_tooling/components.lock.json").read_text())["support_package"]
+            if expected["version"] != patcher_support_pkg_version:
+                raise ValueError("PatcherSupportPkg version does not match the reviewed inventory")
             if Path(f"./{resource}").exists():
                 if self.reset_dmg_cache is True:
                     print(f"  - Removing old {resource}")
@@ -109,22 +115,27 @@ class GenerateDiskImages:
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE
                     )
                 else:
-                    print(f"- {resource} already exists, skipping download")
-                    continue
+                    with Path(resource).open("rb") as stream:
+                        if hashlib.file_digest(stream, "sha256").hexdigest() == expected["sha256"]:
+                            print(f"- {resource} already exists and checksum is valid")
+                            continue
+                    raise ValueError(f"Cached {resource} has an invalid SHA-256")
 
             print(f"- Downloading {resource}...")
 
-            subprocess_wrapper.run_and_verify(
-                [
-                    "/usr/bin/curl", "-LO",
-                    f"https://github.com/dortania/PatcherSupportPkg/releases/download/{patcher_support_pkg_version}/{resource}"
-                ],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            )
-
-            if not Path(f"./{resource}").exists():
-                print(f"- {resource} not found")
-                raise Exception(f"{resource} not found")
+            destination = Path(resource)
+            partial = destination.with_suffix(destination.suffix + ".part")
+            try:
+                digest = hashlib.sha256()
+                with urllib.request.urlopen(expected["url"], timeout=30) as response, partial.open("wb") as stream:
+                    while chunk := response.read(1024 * 1024):
+                        stream.write(chunk)
+                        digest.update(chunk)
+                if digest.hexdigest() != expected["sha256"]:
+                    raise ValueError(f"Downloaded {resource} has an invalid SHA-256")
+                partial.replace(destination)
+            finally:
+                partial.unlink(missing_ok=True)
 
 
     def generate(self) -> None:

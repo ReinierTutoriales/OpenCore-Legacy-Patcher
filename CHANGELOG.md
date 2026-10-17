@@ -1,5 +1,19 @@
 # OpenCore Legacy Patcher changelog
 
+## 3.0.0
+- Implement macOS Tahoe support (EduCovas & ASentientBot)
+- Implement improved wireless patches (EduCovas)
+- Implement improved non-Metal patches on all operating systems (EduCovas)
+- Restore support for FileVault 2 on macOS 26
+- Add USB mappings for macOS 26
+- Adopt Liquid Glass-conformant app icon
+- Increment Binaries:
+  - OpenCorePkg 1.0.5 - release
+
+## 2.5.1 
+- Fix "Root Volume Dirty" appearing after unpatching
+- Reword "Root Volume Dirty" to be clearer for users
+
 ## 2.5.0
 - Disable repatching a dirty root volume
   - Prevents issues if existing patches are partially overwritten
@@ -7,11 +21,12 @@
 - Add slimmed down patchset for Modern Wireless for macOS Sequoia
 - Move JavaScriptCore patch for pre-AVX Macs to RestrictEvents
   - Additionally fixes machines without WiFi cards on Sonoma+ as the patch was not applied before
+- Resolve crashing caused by incorrect reported version in CoreImage patch
 - Increment binaries:
   - OpenCorePkg 1.0.4 - release
   - Lilu 1.7.1 - release
   - RestrictEvents 1.1.7 - (rolling - b70aaa4)
-  - PatcherSupportPkg 1.9.6 - release
+  - PatcherSupportPkg 1.9.7 - release
 
 ## 2.4.1
 - Switch installer source to AppleDB

@@ -12,6 +12,7 @@ import logging
 import enum
 import hashlib
 import atexit
+import tempfile
 
 from typing import Optional, Union
 from pathlib import Path
@@ -19,6 +20,16 @@ from pathlib import Path
 from . import utilities
 
 SESSION = requests.Session()
+
+
+def _failed_response(url: str, error: Exception) -> requests.Response:
+    response = requests.Response()
+    response.status_code = 503
+    response.url = url
+    response.reason = str(error)
+    response._content = b""
+    response._content_consumed = True
+    return response
 
 
 class DownloadStatus(enum.Enum):
@@ -108,7 +119,7 @@ class NetworkUtilities:
         ) as error:
             logging.warn(f"Error calling requests.get: {error}")
             # Return empty response object
-            return requests.Response()
+            return _failed_response(url, error)
 
         return result
 
@@ -137,7 +148,7 @@ class NetworkUtilities:
         ) as error:
             logging.warn(f"Error calling requests.post: {error}")
             # Return empty response object
-            return requests.Response()
+            return _failed_response(url, error)
 
         return result
 
@@ -203,12 +214,21 @@ class DownloadObject:
             verify_checksum (Optional[hashlib._Hash]): Checksum algorithm to use for verifying the download, optional
 
         """
+        if self.status == DownloadStatus.DOWNLOADING or (self.active_thread and self.active_thread.is_alive()):
+            logging.error("Download already in progress")
+            return
+        self.should_stop = False
+        self.error = False
+        self.error_msg = ""
+        self.download_complete = False
+        self.downloaded_file_size = 0
+        self.checksum = None
+        self.start_time = time.time()
+        if self._checksum_storage:
+            self._checksum_storage = hashlib.new(self._checksum_storage.name)
         self.status = DownloadStatus.DOWNLOADING
         logging.info(f"Starting download: {self.filename}")
         if spawn_thread:
-            if self.active_thread:
-                logging.error("Download already in progress")
-                return
             self.active_thread = threading.Thread(target=self._download, args=(display_progress,))
             self.active_thread.start()
             return
@@ -292,11 +312,6 @@ class DownloadObject:
         """
 
         try:
-            if Path(path).exists():
-                logging.info(f"Deleting existing file: {path}")
-                Path(path).unlink()
-                return True
-
             if not Path(path).parent.exists():
                 logging.info(f"Creating directory: {Path(path).parent}")
                 Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -329,17 +344,26 @@ class DownloadObject:
         """
 
         utilities.disable_sleep_while_running()
-
+        response = None
+        partial = None
         try:
             if not self.has_network:
                 raise Exception("No network connection")
 
+            response = NetworkUtilities().get(self.url, stream=True, timeout=10)
+            response.raise_for_status()
+            encoded = response.headers.get("Content-Encoding", "identity").lower() != "identity"
+            if encoded:
+                # iter_content yields decoded bytes; encoded Content-Length cannot be compared.
+                self.total_file_size = 0
+            elif "Content-Length" in response.headers:
+                self.total_file_size = int(response.headers["Content-Length"])
+
             if self._prepare_working_directory(self.filepath) is False:
                 raise Exception(self.error_msg)
 
-            response = NetworkUtilities().get(self.url, stream=True, timeout=10)
-
-            with open(self.filepath, 'wb') as file:
+            with tempfile.NamedTemporaryFile(mode="wb", dir=self.filepath.parent, prefix=f".{self.filepath.name}.", suffix=".part", delete=False) as file:
+                partial = Path(file.name)
                 atexit.register(self.stop)
                 for i, chunk in enumerate(response.iter_content(1024 * 1024 * 4)):
                     if self.should_stop:
@@ -355,24 +379,39 @@ class DownloadObject:
                                 print(f"Downloaded {utilities.human_fmt(self.downloaded_file_size)} of {self.filename}")
                             else:
                                 print(f"Downloaded {self.get_percent():.2f}% of {self.filename} ({utilities.human_fmt(self.get_speed())}/s) ({self.get_time_remaining():.2f} seconds remaining)")
-                self.download_complete = True
-                logging.info(f"Download complete: {self.filename}")
-                logging.info("Stats:")
-                logging.info(f"- Downloaded size: {utilities.human_fmt(self.downloaded_file_size)}")
-                logging.info(f"- Time elapsed: {(time.time() - self.start_time):.2f} seconds")
-                logging.info(f"- Speed: {utilities.human_fmt(self.downloaded_file_size / (time.time() - self.start_time))}/s")
-                logging.info(f"- Location: {self.filepath}")
-                if self._checksum_storage:
-                    self.checksum = self._checksum_storage.hexdigest()
-                    logging.info(f"Checksum: {self.checksum}")
+                if self.should_stop:
+                    raise Exception("Download stopped")
+                if self.total_file_size and self.downloaded_file_size != self.total_file_size:
+                    raise Exception(f"Incomplete download: expected {self.total_file_size} bytes, received {self.downloaded_file_size}")
+            partial.replace(self.filepath)
+            self.download_complete = True
+            self.status = DownloadStatus.COMPLETE
+            logging.info(f"Download complete: {self.filename}")
+            logging.info("Stats:")
+            logging.info(f"- Downloaded size: {utilities.human_fmt(self.downloaded_file_size)}")
+            logging.info(f"- Time elapsed: {(time.time() - self.start_time):.2f} seconds")
+            logging.info(f"- Speed: {utilities.human_fmt(self.get_speed())}/s")
+            logging.info(f"- Location: {self.filepath}")
+            if self._checksum_storage:
+                self.checksum = self._checksum_storage.hexdigest()
+                logging.info(f"Checksum: {self.checksum}")
         except Exception as e:
             self.error = True
             self.error_msg = str(e)
             self.status = DownloadStatus.ERROR
             logging.error(f"Error downloading {self.url}: {self.error_msg}")
 
-        self.status = DownloadStatus.COMPLETE
-        utilities.enable_sleep_after_running()
+        finally:
+            atexit.unregister(self.stop)
+            try:
+                if response is not None:
+                    response.close()
+            finally:
+                try:
+                    if partial is not None:
+                        partial.unlink(missing_ok=True)
+                finally:
+                    utilities.enable_sleep_after_running()
 
 
     def get_percent(self) -> float:
@@ -396,7 +435,8 @@ class DownloadObject:
             float: The download speed in bytes per second
         """
 
-        return self.downloaded_file_size / (time.time() - self.start_time)
+        elapsed = time.time() - self.start_time
+        return self.downloaded_file_size / elapsed if elapsed > 0 else 0.0
 
 
     def get_time_remaining(self) -> float:
@@ -439,14 +479,14 @@ class DownloadObject:
         return False
 
 
-    def stop(self) -> None:
+    def stop(self, wait: bool = True) -> None:
         """
         Stop the download
 
-        If the download is active, this function will hold the thread until stopped
+        Wait for the worker by default. GUI callbacks can request cancellation
+        without blocking their event loop. A worker must never wait for itself.
         """
 
         self.should_stop = True
-        if self.active_thread:
-            while self.active_thread.is_alive():
-                time.sleep(1)
+        if wait and self.active_thread and self.active_thread is not threading.current_thread() and self.active_thread.is_alive():
+            self.active_thread.join()

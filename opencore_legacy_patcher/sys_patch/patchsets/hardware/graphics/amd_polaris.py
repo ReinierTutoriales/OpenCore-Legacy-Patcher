@@ -10,6 +10,7 @@ from ...base import PatchType
 
 from ...shared_patches.monterey_gva    import MontereyGVA
 from ...shared_patches.monterey_opencl import MontereyOpenCL
+from ...shared_patches.tahoe_graphics  import TahoeGraphics
 from ...shared_patches.amd_opencl      import AMDOpenCL
 
 from .....constants  import Constants
@@ -103,6 +104,10 @@ class AMDPolaris(BaseHardware):
 
         # Assuming non-AVX2.0 CPUs
         # Note missing framebuffers are not restored (ex. 'ATY,Berbice')
+        metal_driver_source = self._resolve_gcn_skylake_metal_drivers() or (
+            "12.5-25" if self._xnu_major >= os_data.tahoe else "12.5" if self._xnu_major < os_data.sequoia else "12.5-24"
+        )
+
         return {
             "AMD Polaris": {
                 PatchType.OVERWRITE_SYSTEM_VOLUME: {
@@ -111,8 +116,8 @@ class AMDPolaris(BaseHardware):
                         "AMDRadeonX4000HWServices.kext": "12.5",
                         "AMDRadeonVADriver2.bundle":     "12.5",
                         "AMDRadeonX4000GLDriver.bundle": "12.5",
-                        "AMDMTLBronzeDriver.bundle":     "12.5" if self._xnu_major < os_data.sequoia else "12.5-24",
-                        "AMDShared.bundle":              "12.5",
+                        "AMDMTLBronzeDriver.bundle":     metal_driver_source,
+                        "AMDShared.bundle":              "12.5-GCN-25" if self._xnu_major >= os_data.tahoe else "12.5",
                     },
                 },
             },
@@ -132,6 +137,7 @@ class AMDPolaris(BaseHardware):
 
         _base = {
             **MontereyOpenCL(self._xnu_major, self._xnu_minor, self._constants.detected_os_version).patches(),
+            **TahoeGraphics(self._xnu_major, self._xnu_minor, self._constants.detected_os_version).patches(),
             **self._model_specific_patches(),
         }
         if "AVX2" not in self._computer.cpu.leafs:

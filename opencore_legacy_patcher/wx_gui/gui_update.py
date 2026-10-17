@@ -129,6 +129,9 @@ class UpdateFrame(wx.Frame):
 
         gui_support.wait_for_thread(thread)
 
+        if self.update_failed:
+            return
+
         # Title: Installing update
         title_label.SetLabel("Installing update...")
         title_label.Centre(wx.HORIZONTAL)
@@ -137,6 +140,9 @@ class UpdateFrame(wx.Frame):
         thread.start()
 
         gui_support.wait_for_thread(thread)
+
+        if self.update_failed:
+            return
 
         # Title: Update complete
         title_label.SetLabel("Update complete!")
@@ -190,8 +196,10 @@ class UpdateFrame(wx.Frame):
         - Distributed through GitHub Actions: Requires extraction
         - Distributed through GitHub Releases: No extraction required
         """
+        self.update_failed = True
         # GitHub Release
         if not self.url.endswith(".zip"):
+            self.update_failed = False
             return
 
         logging.info("Extracting nightly update")
@@ -208,12 +216,15 @@ class UpdateFrame(wx.Frame):
             wx.CallAfter(self.progress_bar.SetValue, 0)
             wx.CallAfter(wx.MessageBox, f"Failed to extract update. Error: {result.stderr.decode('utf-8')}", "Critical Error!", wx.OK | wx.ICON_ERROR)
             wx.CallAfter(sys.exit, 1)
+            return
+        self.update_failed = False
 
 
     def _install_update(self) -> None:
         """
         Install PKG
         """
+        self.update_failed = True
         logging.info(f"Installing update: {self.pkg_download_path}")
         result = subprocess_wrapper.run_as_root(["/usr/sbin/installer", "-pkg", str(self.pkg_download_path), "-target", "/"], capture_output=True)
         if result.returncode != 0:
@@ -232,6 +243,8 @@ class UpdateFrame(wx.Frame):
 
                 wx.CallAfter(wx.MessageBox, f"Failed to install update. Please try installing the OpenCore-Patcher.pkg manually or download from GitHub", "Critical Error!", wx.OK | wx.ICON_ERROR)
             wx.CallAfter(sys.exit, 1)
+            return
+        self.update_failed = False
 
 
     def _launch_update(self) -> None:

@@ -283,10 +283,10 @@ class InstallOCFrame(wx.Frame):
 
         if self.result is True:
             if self.constants.update_stage != gui_support.AutoUpdateStages.INACTIVE and self.constants.detected_os >= os_data.os_data.big_sur:
-                self.constants.update_stage = gui_support.AutoUpdateStages.ROOT_PATCHING
+                self.constants.update_stage = gui_support.AutoUpdateStages.UNPATCHING
                 popup_message = wx.MessageDialog(
                     self,
-                    f"OpenCore has finished installing to disk.\n\nWould you like to update your root patches next?", "Success",
+                    f"OpenCore has finished installing to disk.\n\nWould you like to update your root patches next? This will require a few reboots.", "Success",
                     wx.YES_NO | wx.YES_DEFAULT
                 )
                 popup_message.ShowModal()
@@ -319,16 +319,19 @@ class InstallOCFrame(wx.Frame):
         """
         Install OpenCore to disk
         """
+        self.result = False
         logging.info(f"Installing OpenCore to {partition}")
 
         logger = logging.getLogger()
-        logger.addHandler(gui_support.ThreadHandler(self.text_box))
+        handler = gui_support.ThreadHandler(self.text_box)
+        logger.addHandler(handler)
         try:
             self.result = install.tui_disk_installation(self.constants).install_opencore(partition)
         except:
             logging.error("An internal error occurred while installing:\n")
             logging.error(traceback.format_exc())
-        logger.removeHandler(logger.handlers[2])
+        finally:
+            logger.removeHandler(handler)
 
 
     def on_reload_frame(self, event: wx.Event = None) -> None:

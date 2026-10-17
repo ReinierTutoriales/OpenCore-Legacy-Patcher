@@ -8,7 +8,10 @@ ie. during automated patching
 """
 
 import logging
+import os
 import plistlib
+import stat
+import tempfile
 
 from pathlib import Path
 
@@ -43,6 +46,33 @@ class GlobalEnviromentSettings:
                 return plist[property_name]
         return None
 
+    def _write_settings(self, plist: dict) -> bool:
+        """Serialize first, then replace the settings only after a complete write."""
+        path = Path(self.global_settings_plist)
+        temporary = None
+        try:
+            data = plistlib.dumps(plist)
+            metadata = path.stat()
+            with tempfile.NamedTemporaryFile(mode="wb", dir=path.parent, prefix=f".{path.name}.", suffix=".tmp", delete=False) as stream:
+                temporary = Path(stream.name)
+                os.fchmod(stream.fileno(), stat.S_IMODE(metadata.st_mode))
+                if os.geteuid() == 0:
+                    os.fchown(stream.fileno(), metadata.st_uid, metadata.st_gid)
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+            temporary.replace(path)
+            return True
+        except (OSError, TypeError, ValueError, OverflowError) as error:
+            logging.error("Failed to save global settings: %s", error)
+            return False
+        finally:
+            if temporary is not None:
+                try:
+                    temporary.unlink(missing_ok=True)
+                except OSError as error:
+                    logging.warning("Unable to remove temporary settings file: %s", error)
+
 
     def delete_property(self, property_name: str) -> None:
         """
@@ -57,10 +87,7 @@ class GlobalEnviromentSettings:
                 return
             if property_name in plist:
                 del plist[property_name]
-                try:
-                    plistlib.dump(plist, Path(self.global_settings_plist).open("wb"))
-                except PermissionError:
-                    logging.info("Failed to write to global settings")
+                self._write_settings(plist)
 
 
     def write_property(self, property_name: str, property_value) -> None:
@@ -76,17 +103,18 @@ class GlobalEnviromentSettings:
                 logging.error(e)
                 return
             plist[property_name] = property_value
-            try:
-                plistlib.dump(plist, Path(self.global_settings_plist).open("wb"))
-            except PermissionError:
-                logging.info("Failed to write to global settings file")
+            self._write_settings(plist)
 
 
     def _generate_settings_file(self) -> None:
         if Path(self.global_settings_plist).exists():
             return
         try:
-            plistlib.dump({"Developed by Dortania": True,}, Path(self.global_settings_plist).open("wb"))
+            with Path(self.global_settings_plist).open("xb") as stream:
+                plistlib.dump({"Developed by Dortania": True,}, stream)
+        except FileExistsError:
+            # Another instance may have created the file after the existence check.
+            return
         except PermissionError:
             logging.info("Permission error: Unable to write to global settings file")
 
@@ -109,10 +137,7 @@ class GlobalEnviromentSettings:
                 logging.error(e)
                 return
             global_settings_plist.update(defaults_plist)
-            try:
-                plistlib.dump(global_settings_plist, Path(self.global_settings_plist).open("wb"))
-            except PermissionError:
-                logging.info("Permission error: Unable to write to global settings file")
+            if not self._write_settings(global_settings_plist):
                 return
 
             # delete defaults plist

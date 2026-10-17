@@ -85,7 +85,15 @@ class MetalLibraryObject:
             logging.info("Could not fetch Metallib list")
             return None
 
-        METALLIB_ASSET_LIST = results.json()
+        try:
+            assets = results.json()
+        except ValueError:
+            logging.warning("Metallib API returned invalid JSON")
+            return None
+        if not isinstance(assets, list) or not all(isinstance(asset, dict) and all(key in asset for key in ("build", "version", "url")) for asset in assets):
+            logging.warning("Metallib API returned an invalid manifest")
+            return None
+        METALLIB_ASSET_LIST = assets
 
         return METALLIB_ASSET_LIST
 

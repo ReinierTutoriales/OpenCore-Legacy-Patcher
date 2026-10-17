@@ -1,0 +1,71 @@
+name: Sync Dortania candidate
+
+on:
+  schedule:
+    - cron: '23 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: sync-dortania
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository == 'ReinierTutoriales/OpenCore-Legacy-Patcher'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      EVENT_NAME: ${{ github.event_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Fetch the official source and merge into a candidate
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --no-tags https://github.com/dortania/OpenCore-Legacy-Patcher.git main:refs/remotes/dortania/main
+          python3 ci_tooling/sync_upstream.py > "$RUNNER_TEMP/dortania-sync.json"
+      - name: Push candidate, open PR and explicitly start validation
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+
+          def run(*args):
+              return subprocess.check_output(args, text=True).strip()
+
+          result = json.loads((Path(os.environ['RUNNER_TEMP']) / 'dortania-sync.json').read_text())
+          if result is None:
+              print('The official source is already included; nothing to synchronize.')
+              raise SystemExit(0)
+          branch = 'auto-sync/dortania'
+          if result['changed']:
+              run('git', 'push', 'origin', f'HEAD:refs/heads/{branch}')
+          prs = json.loads(run('gh', 'pr', 'list', '--state', 'open', '--base', 'main', '--head', branch, '--json', 'number'))
+          created = not prs
+          if created:
+              body = Path(os.environ['RUNNER_TEMP']) / 'dortania-sync-pr.md'
+              body.write_text(
+                  'Merge the official Dortania source together with its payloads and version references.\n\n'
+                  'The three-way merge preserves fork changes and stops on conflicts. '
+                  'This workflow never merges the PR or publishes a release.\n\n'
+                  'Review ci_tooling/components.lock.json when official payloads or versions change: '
+                  'the reviewed hashes are deliberately not regenerated automatically. '
+                  'Component verification, regression tests, macOS configuration/resource validation '
+                  'and packaging must pass before integration.\n'
+              )
+              run('gh', 'pr', 'create', '--base', 'main', '--head', branch, '--draft', '--title', 'Sync official Dortania changes', '--body-file', str(body))
+          if result['changed'] or created or os.environ['EVENT_NAME'] == 'workflow_dispatch':
+              # Token-generated pushes do not start normal push workflows.
+              run('gh', 'workflow', 'run', 'build-release.yml', '--ref', branch)
+          print(f"Candidate contains Dortania commit {result['upstream']}; main was not changed.")
+          PY

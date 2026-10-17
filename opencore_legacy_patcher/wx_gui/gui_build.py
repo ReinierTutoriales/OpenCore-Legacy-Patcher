@@ -137,8 +137,10 @@ class BuildFrame(wx.Frame):
         """
         Calls build function and redirects stdout to the text box
         """
+        self.build_successful = False
         logger = logging.getLogger()
-        logger.addHandler(gui_support.ThreadHandler(self.text_box))
+        handler = gui_support.ThreadHandler(self.text_box)
+        logger.addHandler(handler)
         try:
             build.BuildOpenCore(self.constants.custom_model or self.constants.computer.real_model, self.constants)
             self.build_successful = True
@@ -151,7 +153,8 @@ class BuildFrame(wx.Frame):
                 logging.error("If you continue to see this error, delete the following file and restart the application:")
                 logging.error("Path: /Users/Shared/.com.dortania.opencore-legacy-patcher.plist")
 
-        logger.removeHandler(logger.handlers[2])
+        finally:
+            logger.removeHandler(handler)
 
 
     def on_return_to_main_menu(self, event: wx.Event = None) -> None:

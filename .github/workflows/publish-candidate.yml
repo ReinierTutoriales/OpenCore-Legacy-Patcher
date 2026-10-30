@@ -1,19 +1,24 @@
 name: Publish verified RC candidate
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/publish-candidate.yml'
-      - 'ci_tooling/publish_candidate.py'
   workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Successful main-branch candidate build ID'
+        required: true
+      source_commit:
+        description: 'Full commit SHA used by the approved build'
+        required: true
+      version:
+        description: 'RC version matching the build provenance'
+        required: true
 
 permissions:
   contents: write
   actions: read
 
 concurrency:
-  group: publish-3.0.0-rc.3
+  group: publish-${{ inputs.version }}
   cancel-in-progress: false
 
 jobs:
@@ -24,9 +29,9 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      CANDIDATE_RUN_ID: '39062582425'
-      SOURCE_COMMIT: d2c9532f7d465d99fd2143338caa551b0b567c6e
-      RELEASE_VERSION: 3.0.0-rc.3
+      CANDIDATE_RUN_ID: ${{ inputs.run_id }}
+      SOURCE_COMMIT: ${{ inputs.source_commit }}
+      RELEASE_VERSION: ${{ inputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:

@@ -1,6 +1,6 @@
 # OpenCore Legacy Patcher — ReinierTutoriales
 
-Fork experimental basado en **Dortania 3.0.0-rc.3**, con las actualizaciones oficiales de componentes `a4b6a2ed` y la corrección de pantalla negra de MacBookPro13,3 `8da38565`. Incluye OpenCore **1.0.8**. No es una versión oficial ni una versión estable.
+Fork experimental basado en **Dortania 3.0.0-rc.5**, con los cambios oficiales posteriores hasta `e2107e05`. Conserva el conjunto oficial de OpenCore **1.0.8**, kexts y PatcherSupportPkg **2.0.5**. No es una versión oficial ni una versión estable.
 
 ## Componentes
 
@@ -16,14 +16,14 @@ Fork experimental basado en **Dortania 3.0.0-rc.3**, con las actualizaciones ofi
 | FeatureUnlock | 1.1.8 |
 | DebugEnhancer | 1.1.1 |
 | CryptexFixup | 1.0.5 |
-| PatcherSupportPkg | 2.0.3 |
-| AppleALC | 1.6.3, igual que Dortania |
+| PatcherSupportPkg | 2.0.5 |
+| AppleALC | 1.6.3-Jazzzny, igual que Dortania |
 
-`payloads/Kexts/Acidanthera` y `payloads/OpenCore` coinciden archivo por archivo con Dortania `8da38565`. Se retiró la opción experimental AppleALC 1.9.8 para conservar exactamente la selección oficial, incluida la excepción de audio 1.6.3. Los binarios principales de los ZIP de OpenCore coinciden con OpenCore 1.0.8, aunque el original todavía declara 1.0.5 en su constante; este fork conserva el identificador 1.0.8 que corresponde a esos binarios.
+Se integran los cambios oficiales hasta `e2107e05` y se usa OpenCore 1.0.8, la última publicación estable de Acidanthera verificada, junto con su validador y la clave de driver HideVerbose. Las kexts genéricas coinciden con sus últimas publicaciones. AppleALC 1.9.8 está disponible en Settings → Extras → Latest AppleALC (Experimental); se conserva 1.6.3-Jazzzny por defecto para la compatibilidad antigua documentada. Las variantes Navi y RestrictEvents rolling mantienen sus modificaciones específicas. La revisión de código y los tests no sustituyen pruebas físicas.
 
 RestrictEvents conserva la compilación rolling 1.1.7 de Dortania: la publicación etiquetada 1.1.6 es anterior. WhateverGreen 1.6.9-Navi conserva el parche especial de retroiluminación para Navi MXM. Las extensiones antiguas de Apple y los inyectores específicos de modelo siguen asociados al conjunto de parches de OCLP: sustituirlos por archivos de un macOS moderno elimina su propósito.
 
-`ci_tooling/components.lock.json` registra versiones, excepciones, fuentes y SHA-256 de los payloads. `requirements.txt` fija las dependencias Python directas a las versiones consultadas el 16-10-2026; Cocoa reemplaza al metapaquete completo PyObjC. La CI conserva también `pip freeze` para identificar las dependencias transitivas resueltas.
+`ci_tooling/components.lock.json` registra versiones, excepciones, fuentes y SHA-256 de los payloads. `requirements.txt` fija las dependencias Python directas a las versiones consultadas el 30-10-2026; Cocoa reemplaza al metapaquete completo PyObjC. PyObjC Core y Cocoa 13.0 se fijan juntos; requieren Python 3.11 y disponen de wheels Intel/universal2 para macOS 10.9 o posterior. La CI conserva también `pip freeze` para identificar las dependencias transitivas resueltas.
 
 ## Compilación y comprobaciones
 
@@ -33,7 +33,7 @@ RestrictEvents conserva la compilación rolling 1.1.7 de Dortania: la publicaci�
 
 Abre un PR en borrador y solicita explícitamente `Build fork candidate` mediante `workflow_dispatch`, porque un push hecho con `GITHUB_TOKEN` no dispara los workflows normales de push. La validación incluye inventario, pruebas, configuraciones, recursos y empaquetado. No fusiona el PR ni publica una versión. Si el oficial cambia los archivos o versiones registrados en `components.lock.json`, la verificación exige revisar y actualizar el inventario; la automatización no acepta nuevos hashes a ciegas.
 
-El calendario solo queda activo cuando este workflow está integrado en `main`; mientras el PR #1 siga abierto, los enlaces a `main` muestran la versión anterior. GitHub debe permitir a Actions crear pull requests en este repositorio; si esa opción está deshabilitada, el trabajo lo indicará como un error de permisos. No requiere un token personal adicional.
+El calendario solo queda activo cuando este workflow está integrado en `main`; las ramas de actualización se comprueban antes de integrarse. GitHub debe permitir a Actions crear pull requests en este repositorio; si esa opción está deshabilitada, el trabajo lo indicará como un error de permisos. No requiere un token personal adicional.
 
 ### Validación y paquetes
 
@@ -53,7 +53,7 @@ Los tres paquetes se ofrecen individualmente, con los nombres del original: `Ope
 
 El validador conserva el proceso original de Dortania: genera configuraciones para los modelos compatibles y las capturas de hardware, las comprueba con `ocvalidate` y revisa los recursos de los parches. El ejecutable `ocvalidate` coincide con el de OpenCore 1.0.8. Las comprobaciones de recursos incluyen Tahoe y respetan las versiones Darwin terminadas en `.0`, sin sustituirlas por la versión del equipo anfitrión. La imagen de recursos se desmonta también cuando falla una comprobación; si el desmontaje devuelve un error, solo se acepta como completado tras comprobar que el volumen ya no está montado.
 
-En el original revisado (`8da38565`), la comprobación de recursos recorre Darwin 20–24 (Big Sur–Sequoia), con versiones menores 0–9; este fork conserva esos casos y añade Darwin 25 (Tahoe), para un total de 60 combinaciones. El sistema anfitrión de la CI es distinto: Dortania usa su runner Intel Monterey y aquí se usa `macos-15-intel`. Los workflows originales `CI - Validation` y `CI - Build wxPython` están restringidos al propietario `dortania` y aparecen omitidos en un fork. Aquí se ejecutan `CI - Validation (External)` y `Build fork candidate`, que invocan el mismo punto de entrada `--validate`.
+En el original revisado (`e2107e05`), la comprobación de recursos recorre Darwin 20–24 (Big Sur–Sequoia), con versiones menores 0–9; este fork conserva esos casos y añade Darwin 25 (Tahoe), para un total de 60 combinaciones. El sistema anfitrión de la CI es distinto: Dortania usa su runner Intel Monterey y aquí se usa `macos-15-intel`. Los workflows originales `CI - Validation` y `CI - Build wxPython` están restringidos al propietario `dortania` y aparecen omitidos en un fork. Aquí se ejecutan `CI - Validation (External)` y `Build fork candidate`, que invocan el mismo punto de entrada `--validate`.
 
 ## Instalación y recuperación
 
@@ -70,3 +70,9 @@ Los paquetes del workflow son **candidatos sin firma/notarización**. El helper 
 Para una distribución funcional con permisos elevados hace falta una identidad Developer ID propia, compilar el helper con el Team ID correspondiente y firmar la aplicación y el paquete. Véase `ci_tooling/privileged_helper_tool/README.md`. Compilar correctamente o abrir la GUI no demuestra que el helper acepte las operaciones.
 
 Créditos: Dortania, colaboradores de OCLP, Acidanthera y TechPrototyper.
+
+## Correcciones de implementación
+
+Los ajustes rechazan plists cuyo elemento raíz no sea un diccionario, sin sobrescribirlos ni cerrar la app con una excepción. La lectura centralizada cierra el archivo antes de devolver los valores. La publicación calcula una sola vez el SHA-256 de cada archivo y reutiliza el resultado en la verificación local y remota, evitando una segunda lectura de los tres paquetes grandes.
+
+El aviso previo a la actualización usa el hilo de UI y un temporizador de diez segundos; aceptar, cancelar y cerrar liberan el diálogo y el temporizador. La publicación se inicia manualmente con el ID de build, commit y versión; exige procedencia coherente y ya no reutiliza valores fijos de rc.3.

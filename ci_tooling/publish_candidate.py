@@ -29,10 +29,11 @@ def validate_files(folder, commit, version):
         checksums[name] = checksum
     if set(checksums) != {"dist/" + p for p in PACKAGES}:
         raise ValueError("The build must contain all three package checksums")
+    identities = {name: {"digest": digest(folder / name), "size": (folder / name).stat().st_size} for name in PACKAGES + INFO}
     for name in PACKAGES:
-        if digest(folder / name) != "sha256:" + checksums["dist/" + name]:
+        if identities[name]["digest"] != "sha256:" + checksums["dist/" + name]:
             raise ValueError(f"Package checksum mismatch: {name}")
-    return {name: {"digest": digest(folder / name), "size": (folder / name).stat().st_size} for name in PACKAGES + INFO}
+    return identities
 
 
 def command(*args):
@@ -76,7 +77,7 @@ def create_release(repo, version, commit):
         "-f", f"tag_name={version}", "-f", f"target_commitish={commit}",
         "-f", f"name=OpenCore Legacy Patcher {version} — ReinierTutoriales",
         "-F", "draft=true", "-F", "prerelease=true",
-        "-f", "body=" + Path("ci_tooling/release-notes-rc3.md").read_text(),
+        "-f", "body=" + Path(f"ci_tooling/release-notes-{version}.md").read_text(),
     ))
 
 

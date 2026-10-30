@@ -1,6 +1,9 @@
 name: Sync Dortania candidate
 
 on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/sync-dortania.yml']
   schedule:
     - cron: '23 9 * * *'
   workflow_dispatch:

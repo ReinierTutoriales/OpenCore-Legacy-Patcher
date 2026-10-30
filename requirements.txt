@@ -1,7 +1,9 @@
 requests==2.34.2
 # Cocoa includes the Foundation/CoreFoundation bindings used by the application.
 # Avoid installing every optional macOS framework via the pyobjc metapackage.
-pyobjc-framework-Cocoa==12.2.2
+# Pin the bridge and framework together for reproducible Python 3.11 builds.
+pyobjc-core==13.0
+pyobjc-framework-Cocoa==13.0
 wxpython==4.3.2
 pyinstaller==6.22.3
 packaging==26.3

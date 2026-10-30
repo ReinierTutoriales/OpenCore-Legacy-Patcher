@@ -77,7 +77,7 @@ def create_release(repo, version, commit):
         "-f", f"tag_name={version}", "-f", f"target_commitish={commit}",
         "-f", f"name=OpenCore Legacy Patcher {version} — ReinierTutoriales",
         "-F", "draft=true", "-F", "prerelease=true",
-        "-f", "body=" + Path("ci_tooling/release-notes-rc3.md").read_text(),
+        "-f", "body=" + Path(f"ci_tooling/release-notes-{version}.md").read_text(),
     ))
 
 

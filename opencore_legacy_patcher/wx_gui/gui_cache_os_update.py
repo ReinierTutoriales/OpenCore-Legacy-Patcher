@@ -5,7 +5,6 @@ Primarily for caching updates required for incoming OS (ex. KDKs)
 
 import wx
 import sys
-import time
 import logging
 import threading
 
@@ -107,13 +106,8 @@ class OSUpdateFrame(wx.Frame):
         self.did_cancel = -1
         self._notifyUser()
 
-        # Allow 10 seconds for the user to cancel the download
-        # If nothing, continue
-        for i in range(0, 10):
-            if self.did_cancel == 1:
-                self._exit()
-            if self.did_cancel == -1:
-                time.sleep(1)
+        if self.did_cancel == 1:
+            self._exit()
 
         for item in download_objects:
             name = item
@@ -235,27 +229,21 @@ class OSUpdateFrame(wx.Frame):
     def _notifyUser(self) -> None:
         """
         Notify user of what OCLP is doing
-        Note will be spawned through wx.CallAfter
-        """
-        threading.Thread(target=self._notifyUserThread).start()
-
-
-    def _notifyUserThread(self) -> None:
-        """
-        Notify user of what OCLP is doing
+        Keep the dialog on the GUI thread and allow ten seconds to cancel.
         """
         message=f"OpenCore Legacy Patcher has detected that a macOS update is being downloaded:\n{self.os_data[0]} ({self.os_data[1]})\n\nThe patcher needs to prepare the system for the update, and will download any additional resources it may need post-update.\n\nThis may take a few minutes, the patcher will exit when it is done."
         # Yes/No for caching
         dlg = wx.MessageDialog(self.frame, message=message, caption="OpenCore Legacy Patcher", style=wx.YES_NO | wx.ICON_INFORMATION)
         dlg.SetYesNoLabels("&Ok", "&Cancel")
-        result = dlg.ShowModal()
-        if result == wx.ID_NO:
-            logging.info("User cancelled OS caching")
-            if hasattr(self, "download_obj"):
-                self.download_obj.stop()
-            self.did_cancel = 1
-        else:
-            self.did_cancel = 0
+        timer = wx.CallLater(10000, dlg.EndModal, wx.ID_YES)
+        try:
+            result = dlg.ShowModal()
+            self.did_cancel = int(result != wx.ID_YES)
+            if self.did_cancel:
+                logging.info("User cancelled OS caching")
+        finally:
+            timer.Stop()
+            dlg.Destroy()
 
     def _exit(self):
         """

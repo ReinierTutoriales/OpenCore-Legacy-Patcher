@@ -23,7 +23,7 @@ Se integran los cambios oficiales hasta `e2107e05` y se usa OpenCore 1.0.8, la �
 
 RestrictEvents conserva la compilación rolling 1.1.7 de Dortania: la publicación etiquetada 1.1.6 es anterior. WhateverGreen 1.6.9-Navi conserva el parche especial de retroiluminación para Navi MXM. Las extensiones antiguas de Apple y los inyectores específicos de modelo siguen asociados al conjunto de parches de OCLP: sustituirlos por archivos de un macOS moderno elimina su propósito.
 
-`ci_tooling/components.lock.json` registra versiones, excepciones, fuentes y SHA-256 de los payloads. `requirements.txt` fija las dependencias Python directas a las versiones consultadas el 16-10-2026; Cocoa reemplaza al metapaquete completo PyObjC. La CI conserva también `pip freeze` para identificar las dependencias transitivas resueltas.
+`ci_tooling/components.lock.json` registra versiones, excepciones, fuentes y SHA-256 de los payloads. `requirements.txt` fija las dependencias Python directas a las versiones consultadas el 30-10-2026; Cocoa reemplaza al metapaquete completo PyObjC. PyObjC Core y Cocoa 13.0 se fijan juntos; requieren Python 3.11 y disponen de wheels Intel/universal2 para macOS 10.9 o posterior. La CI conserva también `pip freeze` para identificar las dependencias transitivas resueltas.
 
 ## Compilación y comprobaciones
 
@@ -51,7 +51,7 @@ Después comprueba que la aplicación empaquetada puede abrir su CLI. Los artefa
 
 Los tres paquetes se ofrecen individualmente, con los nombres del original: `OpenCore-Patcher.pkg`, `OpenCore-Patcher-Uninstaller.pkg` y `AutoPkg-Assets.pkg`. Los hashes y datos de compilación se entregan aparte en `OpenCore-Patcher-Intel-build-info`. Ya no se agrupan los dos paquetes grandes en una descarga conjunta ni se duplica AutoPkg. `AutoPkg-Assets.pkg` conserva el propósito definido por Dortania: lo utiliza el parcheador; para instalar la aplicación manualmente corresponde `OpenCore-Patcher.pkg`.
 
-El validador conserva el proceso original de Dortania: genera configuraciones para los modelos compatibles y las capturas de hardware, las comprueba con `ocvalidate` y revisa los recursos de los parches. El ejecutable `ocvalidate` coincide con el de OpenCore 1.0.6. Las comprobaciones de recursos incluyen Tahoe y respetan las versiones Darwin terminadas en `.0`, sin sustituirlas por la versión del equipo anfitrión. La imagen de recursos se desmonta también cuando falla una comprobación; si el desmontaje devuelve un error, solo se acepta como completado tras comprobar que el volumen ya no está montado.
+El validador conserva el proceso original de Dortania: genera configuraciones para los modelos compatibles y las capturas de hardware, las comprueba con `ocvalidate` y revisa los recursos de los parches. El ejecutable `ocvalidate` coincide con el de OpenCore 1.0.8. Las comprobaciones de recursos incluyen Tahoe y respetan las versiones Darwin terminadas en `.0`, sin sustituirlas por la versión del equipo anfitrión. La imagen de recursos se desmonta también cuando falla una comprobación; si el desmontaje devuelve un error, solo se acepta como completado tras comprobar que el volumen ya no está montado.
 
 En el original revisado (`e2107e05`), la comprobación de recursos recorre Darwin 20–24 (Big Sur–Sequoia), con versiones menores 0–9; este fork conserva esos casos y añade Darwin 25 (Tahoe), para un total de 60 combinaciones. El sistema anfitrión de la CI es distinto: Dortania usa su runner Intel Monterey y aquí se usa `macos-15-intel`. Los workflows originales `CI - Validation` y `CI - Build wxPython` están restringidos al propietario `dortania` y aparecen omitidos en un fork. Aquí se ejecutan `CI - Validation (External)` y `Build fork candidate`, que invocan el mismo punto de entrada `--validate`.
 
@@ -74,3 +74,5 @@ Créditos: Dortania, colaboradores de OCLP, Acidanthera y TechPrototyper.
 ## Correcciones de implementación
 
 Los ajustes rechazan plists cuyo elemento raíz no sea un diccionario, sin sobrescribirlos ni cerrar la app con una excepción. La lectura centralizada cierra el archivo antes de devolver los valores. La publicación calcula una sola vez el SHA-256 de cada archivo y reutiliza el resultado en la verificación local y remota, evitando una segunda lectura de los tres paquetes grandes.
+
+El aviso previo a la actualización usa el hilo de UI y un temporizador de diez segundos; aceptar, cancelar y cerrar liberan el diálogo y el temporizador. La publicación se inicia manualmente con el ID de build, commit y versión; exige procedencia coherente y ya no reutiliza valores fijos de rc.3.

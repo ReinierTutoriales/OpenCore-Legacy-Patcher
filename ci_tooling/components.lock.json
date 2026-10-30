@@ -9,7 +9,7 @@
   "versions": {
     "patcher_version": "3.0.0-rc.5",
     "patcher_support_pkg_version": "2.0.5",
-    "opencore_version": "1.0.6",
+    "opencore_version": "1.0.8",
     "lilu_version": "1.7.2",
     "whatevergreen_version": "1.7.1",
     "whatevergreen_navi_version": "1.6.9-Navi",
@@ -76,7 +76,8 @@
     "kdkless_version": "1.0.0",
     "detected_os_version": "",
     "piixata_monterey_version": "1.0.0",
-    "apfs_zlib_tahoe_version": "26.7"
+    "apfs_zlib_tahoe_version": "26.7",
+    "applealc_latest_version": "1.9.8"
   },
   "support_package": {
     "version": "2.0.5",
@@ -247,7 +248,7 @@
     }
   ],
   "exceptions": {
-    "AppleALC": "Use upstream 1.6.3-Jazzzny for older-model support.",
+    "AppleALC": "Latest tagged 1.9.8 is bundled as an experimental option; retain upstream 1.6.3-Jazzzny by default because the legacy regression is not proven fixed.",
     "RestrictEvents": "Keep upstream rolling 1.1.7 (b70aaa4), newer than the latest tagged release 1.1.6.",
     "WhateverGreen-Navi": "Keep upstream modified 1.6.9-Navi; stock 1.7.1 does not replace its backlight patch.",
     "Apple and model-specific payloads": "Keep matched legacy versions from upstream, not replacements from newer macOS releases."
@@ -270,6 +271,8 @@
     "payloads/Kexts/Acidanthera/AppleALC-v1.6.3-Jazzzny-DEBUG.zip": "859dc21a1503cc70e1f7788d2aebe4bf4c36ac4cd7794919bf09e10d728a15c6",
     "payloads/Kexts/Acidanthera/AppleALC-v1.6.3-Jazzzny-RELEASE.zip": "b73da3dbf709e32d29b364520fedd69491b22a963b8d561064d72c99f85ec9b3",
     "payloads/Kexts/Acidanthera/AppleALC-v1.6.3-RELEASE.zip": "f0179f00351fcd630164478673cbccb84098122a47cea9afe1e2ecfbc56924ed",
+    "payloads/Kexts/Acidanthera/AppleALC-v1.9.8-DEBUG.zip": "6799ac45c39b9ce078795ad49179e6392af26f94896cbcce25f218e710891499",
+    "payloads/Kexts/Acidanthera/AppleALC-v1.9.8-RELEASE.zip": "66a175261b811a50cff38370d9380629d891518c66af8340be86204159d1a429",
     "payloads/Kexts/Acidanthera/AutoPkgInstaller-v1.0.4-DEBUG.zip": "4016262212e5fa2e0524da571a8c764722295fe5877175c8e70b8336c38c02e7",
     "payloads/Kexts/Acidanthera/AutoPkgInstaller-v1.0.4-RELEASE.zip": "91368c6e37002d19f5b8f39a6746790b8f73fc17a80fb27ab78d9ae743725745",
     "payloads/Kexts/Acidanthera/BlueToolFixup-v2.7.2-DEBUG.zip": "1e219ded65124aec596c9572f8e63bfddc27140e870a86ad6e179bdeacf4a3ba",
@@ -355,9 +358,9 @@
     "payloads/Kexts/Wifi/IO80211FamilyLegacy-v1.0.0.zip": "e681dcc76a2cd2cea4b0ad5f27a3c816055fde3cdccd890dd10a3e2c84e96d93",
     "payloads/Kexts/Wifi/IOSkywalkFamily-v1.2.0.zip": "1e12b7ef42f55b39ea54ada97b46331220668b2c48a28656e9875c5145fe2479",
     "payloads/Kexts/Wifi/corecaptureElCap-v1.0.2.zip": "59dbbd272c3a796219ddfa43df5349731e2dd068047136b69109c64c6657a47f",
-    "payloads/OpenCore/OpenCore-DEBUG.zip": "ea111a2f79bca1bbd592511f0b9be0e0490816fec4c04319cb4302e00b9819db",
-    "payloads/OpenCore/OpenCore-RELEASE.zip": "cb7d679a52be838048eefe12dbd0539a6c9717e049e30d05ab41941f4a45a05e",
-    "payloads/OpenCore/macserial": "c920802bbba68bdcf3da7e1db3c45a1e0756b5a653c869db9ff8142272c57231",
-    "payloads/OpenCore/ocvalidate": "bb2be1660a286e23262c7b0bd3b517b305cdf7133715db60f47516d2c62bca43"
+    "payloads/OpenCore/OpenCore-DEBUG.zip": "d41e2ab8217eab7b0c55a4d4149d9f93489492dc98ecd687560751f76da40e57",
+    "payloads/OpenCore/OpenCore-RELEASE.zip": "cc544277750d5e87167d4f51f494bc8a213228078c9c3fd07ba072b5167c209f",
+    "payloads/OpenCore/macserial": "43cc5c78d663074de30e306627fa31836db6c92d542c06b33b9e3acdd1106cab",
+    "payloads/OpenCore/ocvalidate": "c76f907d5caad299889a2314ae68f03cd8538ad53f65a3c2c7c95ae0d0bb0b38"
   }
 }

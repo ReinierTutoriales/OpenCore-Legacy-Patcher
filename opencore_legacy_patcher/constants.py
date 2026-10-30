@@ -28,7 +28,7 @@ class Constants:
 
         # OpenCore Versioning
         # https://github.com/acidanthera/OpenCorePkg
-        self.opencore_version: str = "1.0.6"
+        self.opencore_version: str = "1.0.8"
 
         # Kext Versioning
         ## Acidanthera
@@ -38,6 +38,8 @@ class Constants:
         self.whatevergreen_navi_version: str = "1.6.9-Navi"  # WhateverGreen (Navi Patch)
         self.airportbcrmfixup_version:   str = "2.2.1"  #      AirPortBrcmFixup
         self.nvmefix_version:            str = "1.1.3"  #      NVMeFix
+        self.applealc_latest_version:    str = "1.9.8"
+        self.use_latest_applealc:        bool = False
         self.applealc_version:           str = "1.6.3-Jazzzny" # AppleALC, modified to add support for older models
         self.restrictevents_version:     str = "1.1.7"  #      RestrictEvents
         self.featureunlock_version:      str = "1.1.8"  #      FeatureUnlock
@@ -542,8 +544,12 @@ class Constants:
         return self.payload_kexts_path / Path(f"Wifi/AirPortBrcmNIC-Tahoe-v{self.airport_brcmnic_tahoe_version}.zip")
 
     @property
+    def selected_applealc_version(self):
+        return self.applealc_latest_version if self.use_latest_applealc else self.applealc_version
+
+    @property
     def applealc_path(self):
-        return self.payload_kexts_path / Path(f"Acidanthera/AppleALC-v{self.applealc_version}-{self.kext_variant}.zip")
+        return self.payload_kexts_path / Path(f"Acidanthera/AppleALC-v{self.selected_applealc_version}-{self.kext_variant}.zip")
 
     @property
     def piixata_path(self):

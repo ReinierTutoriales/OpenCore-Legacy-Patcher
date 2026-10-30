@@ -1,12 +1,12 @@
 # OpenCore Legacy Patcher — ReinierTutoriales
 
-Fork experimental basado en **Dortania 3.0.0-rc.5**, con los cambios oficiales posteriores hasta `e2107e05`. Conserva el conjunto oficial de OpenCore **1.0.6**, kexts y PatcherSupportPkg **2.0.5**. No es una versión oficial ni una versión estable.
+Fork experimental basado en **Dortania 3.0.0-rc.5**, con los cambios oficiales posteriores hasta `e2107e05`. Conserva el conjunto oficial de OpenCore **1.0.8**, kexts y PatcherSupportPkg **2.0.5**. No es una versión oficial ni una versión estable.
 
 ## Componentes
 
 | Componente | Versión |
 |---|---|
-| OpenCore / OpenRuntime / OpenCanopy / ocvalidate | 1.0.6 |
+| OpenCore / OpenRuntime / OpenCanopy / ocvalidate | 1.0.8 |
 | Lilu | 1.7.2 |
 | WhateverGreen | 1.7.1 |
 | AirportBrcmFixup | 2.2.1 |
@@ -19,7 +19,7 @@ Fork experimental basado en **Dortania 3.0.0-rc.5**, con los cambios oficiales p
 | PatcherSupportPkg | 2.0.5 |
 | AppleALC | 1.6.3-Jazzzny, igual que Dortania |
 
-`payloads/Kexts/Acidanthera`, `payloads/OpenCore` y la plantilla de configuración coinciden con Dortania `e2107e05`. Se conserva OpenCore 1.0.6 por la reversión oficial `3096fa9`, junto con su validador. AppleALC utiliza la variante oficial 1.6.3-Jazzzny para modelos antiguos. La actualización incluye los mapas USB oficiales reestructurados, nuevas kexts específicas y PatcherSupportPkg 2.0.5.
+Se integran los cambios oficiales hasta `e2107e05` y se usa OpenCore 1.0.8, la última publicación estable de Acidanthera verificada, junto con su validador y la clave de driver HideVerbose. Las kexts genéricas coinciden con sus últimas publicaciones. AppleALC 1.9.8 está disponible en Settings → Extras → Latest AppleALC (Experimental); se conserva 1.6.3-Jazzzny por defecto para la compatibilidad antigua documentada. Las variantes Navi y RestrictEvents rolling mantienen sus modificaciones específicas. La revisión de código y los tests no sustituyen pruebas físicas.
 
 RestrictEvents conserva la compilación rolling 1.1.7 de Dortania: la publicación etiquetada 1.1.6 es anterior. WhateverGreen 1.6.9-Navi conserva el parche especial de retroiluminación para Navi MXM. Las extensiones antiguas de Apple y los inyectores específicos de modelo siguen asociados al conjunto de parches de OCLP: sustituirlos por archivos de un macOS moderno elimina su propósito.
 

@@ -29,10 +29,11 @@ def validate_files(folder, commit, version):
         checksums[name] = checksum
     if set(checksums) != {"dist/" + p for p in PACKAGES}:
         raise ValueError("The build must contain all three package checksums")
+    identities = {name: {"digest": digest(folder / name), "size": (folder / name).stat().st_size} for name in PACKAGES + INFO}
     for name in PACKAGES:
-        if digest(folder / name) != "sha256:" + checksums["dist/" + name]:
+        if identities[name]["digest"] != "sha256:" + checksums["dist/" + name]:
             raise ValueError(f"Package checksum mismatch: {name}")
-    return {name: {"digest": digest(folder / name), "size": (folder / name).stat().st_size} for name in PACKAGES + INFO}
+    return identities
 
 
 def command(*args):

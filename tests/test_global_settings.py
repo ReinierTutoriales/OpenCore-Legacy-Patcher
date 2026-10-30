@@ -32,6 +32,15 @@ class SettingsTests(unittest.TestCase):
                 self.store.write_property("invalid", value)
                 self.assert_original_preserved()
 
+    def test_valid_plist_with_wrong_root_type_does_not_crash_or_get_overwritten(self):
+        for root in (["setting"], "setting", 42):
+            for action in (lambda: self.store.read_property("setting"), lambda: self.store.write_property("setting", True), lambda: self.store.delete_property("setting")):
+                with self.subTest(root=root):
+                    original = plistlib.dumps(root)
+                    self.path.write_bytes(original)
+                    self.assertIsNone(action())
+                    self.assertEqual(self.path.read_bytes(), original)
+
     def test_failed_replace_preserves_existing_settings_and_cleans_temporary_file(self):
         with patch.object(Path, "replace", side_effect=OSError("disk error")):
             self.store.write_property("new", "value")

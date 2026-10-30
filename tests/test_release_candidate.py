@@ -29,7 +29,9 @@ class ReleaseTests(unittest.TestCase):
         return publish.validate_files(self.root, "a" * 40, "3.0.0-rc.3")
 
     def test_verified_packages_and_metadata_are_all_included(self):
-        self.assertEqual(set(self.validate()), set(publish.PACKAGES + publish.INFO))
+        with patch.object(publish, "digest", wraps=publish.digest) as hashing:
+            self.assertEqual(set(self.validate()), set(publish.PACKAGES + publish.INFO))
+        self.assertEqual(len(hashing.call_args_list), len(publish.PACKAGES + publish.INFO))
 
     def test_wrong_source_commit_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "provenance"):

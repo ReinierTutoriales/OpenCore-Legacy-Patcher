@@ -30,20 +30,25 @@ class GlobalEnviromentSettings:
         self._convert_defaults_to_global_settings()
 
 
-    def read_property(self, property_name: str) -> str:
-        """
-        Reads a property from the global settings file
-        """
+    @staticmethod
+    def _read_settings(path: Path):
+        """Read a dictionary and close its file before returning."""
+        try:
+            with path.open("rb") as stream:
+                settings = plistlib.load(stream)
+            if not isinstance(settings, dict):
+                raise TypeError("Settings plist root must be a dictionary")
+            return settings
+        except Exception as error:
+            logging.error("Unable to read settings %s: %s", path, error)
+            return None
 
+
+    def read_property(self, property_name: str) -> str:
         if Path(self.global_settings_plist).exists():
-            try:
-                plist = plistlib.load(Path(self.global_settings_plist).open("rb"))
-            except Exception as e:
-                logging.error("Error: Unable to read global settings file")
-                logging.error(e)
-                return None
-            if property_name in plist:
-                return plist[property_name]
+            settings = self._read_settings(Path(self.global_settings_plist))
+            if settings is not None:
+                return settings.get(property_name)
         return None
 
     def _write_settings(self, plist: dict) -> bool:
@@ -79,11 +84,8 @@ class GlobalEnviromentSettings:
         Deletes a property from the global settings file
         """
         if Path(self.global_settings_plist).exists():
-            try:
-                plist = plistlib.load(Path(self.global_settings_plist).open("rb"))
-            except Exception as e:
-                logging.error("Error: Unable to read global settings file")
-                logging.error(e)
+            plist = self._read_settings(Path(self.global_settings_plist))
+            if plist is None:
                 return
             if property_name in plist:
                 del plist[property_name]
@@ -96,11 +98,8 @@ class GlobalEnviromentSettings:
         """
 
         if Path(self.global_settings_plist).exists():
-            try:
-                plist = plistlib.load(Path(self.global_settings_plist).open("rb"))
-            except Exception as e:
-                logging.error("Error: Unable to read global settings file")
-                logging.error(e)
+            plist = self._read_settings(Path(self.global_settings_plist))
+            if plist is None:
                 return
             plist[property_name] = property_value
             self._write_settings(plist)
@@ -129,12 +128,9 @@ class GlobalEnviromentSettings:
 
         if Path(defaults_path).exists():
             # merge defaults with global settings
-            try:
-                defaults_plist = plistlib.load(Path(defaults_path).open("rb"))
-                global_settings_plist = plistlib.load(Path(self.global_settings_plist).open("rb"))
-            except Exception as e:
-                logging.error("Error: Unable to read global settings file")
-                logging.error(e)
+            defaults_plist = self._read_settings(defaults_path)
+            global_settings_plist = self._read_settings(Path(self.global_settings_plist))
+            if defaults_plist is None or global_settings_plist is None:
                 return
             global_settings_plist.update(defaults_plist)
             if not self._write_settings(global_settings_plist):

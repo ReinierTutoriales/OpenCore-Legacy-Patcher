@@ -114,5 +114,3 @@ class ModernWireless(BaseHardware):
             **self._patches_modern_wireless_common(),
             **self._patches_modern_wireless_common_extended(),
         }
-
-        return _base

@@ -70,3 +70,7 @@ Los paquetes del workflow son **candidatos sin firma/notarización**. El helper 
 Para una distribución funcional con permisos elevados hace falta una identidad Developer ID propia, compilar el helper con el Team ID correspondiente y firmar la aplicación y el paquete. Véase `ci_tooling/privileged_helper_tool/README.md`. Compilar correctamente o abrir la GUI no demuestra que el helper acepte las operaciones.
 
 Créditos: Dortania, colaboradores de OCLP, Acidanthera y TechPrototyper.
+
+## Correcciones de implementación
+
+Los ajustes rechazan plists cuyo elemento raíz no sea un diccionario, sin sobrescribirlos ni cerrar la app con una excepción. La lectura centralizada cierra el archivo antes de devolver los valores. La publicación calcula una sola vez el SHA-256 de cada archivo y reutiliza el resultado en la verificación local y remota, evitando una segunda lectura de los tres paquetes grandes.

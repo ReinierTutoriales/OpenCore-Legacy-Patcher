@@ -1,6 +1,6 @@
 # OpenCore Legacy Patcher — ReinierTutoriales
 
-Fork experimental basado en **Dortania 3.0.0-rc.5**, con las actualizaciones oficiales de componentes `a4b6a2ed` y la corrección de pantalla negra de MacBookPro13,3 `e2107e05`. Incluye OpenCore **1.0.6**. No es una versión oficial ni una versión estable.
+Fork experimental basado en **Dortania 3.0.0-rc.5**, con los cambios oficiales posteriores hasta `e2107e05`. Conserva el conjunto oficial de OpenCore **1.0.6**, kexts y PatcherSupportPkg **2.0.5**. No es una versión oficial ni una versión estable.
 
 ## Componentes
 
